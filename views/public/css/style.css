@@ -1,0 +1,20 @@
+.dark-blue {
+  background-color: #072227;
+}
+
+.light-font-color {
+  color: #faeee7;
+}
+
+#sidebar a:hover {
+  background: #165d6a;
+  color: white;
+}
+#sidebar span {
+  color: white;
+}
+
+.b-no {
+  border: 0;
+  padding: 10px;
+}
