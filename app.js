@@ -19,7 +19,7 @@ const devRouter = require("./routes/dev");
 app.use("/dev",devRouter);
 
 app.use((req, res) => {
-  res.send("error");
+  res.render("404")
 });
 
 app.listen(12345, (req, res, next) => {

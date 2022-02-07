@@ -10,7 +10,7 @@ exports.getAtt = (req, res, next) => {
   res.render("att", {
     btnVisible: a.getHours() > 6 || a.getHours() < 24 ? true : false,
     clockInState: false,
-    clockOutState: true,
+    clockOutState: true
   });
 };
 
@@ -18,7 +18,6 @@ exports.getHome = (req, res, next) => {
   res.render("home", { username: "Kishan" });
 };
 
-
-exports.getLogin = (req,res,next) =>{
-  res.render("login")
-}
+exports.getLogin = (req, res, next) => {
+  res.render("login", { loginForm: true });
+};

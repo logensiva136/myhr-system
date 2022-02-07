@@ -1,7 +1,16 @@
 <%- include("includes/head") %>
-<div class="p-10">
-<div class="bg-primary h10 w10">
-
-</div>
-</div>
-<%- include("includes/foot") %>
+  <div class="d-flex align-items-center vh-100 justify-content-center" style="background-color:#072227">
+    <div class="wrapper p-3 rounded" style="background-color:white ">
+      <form class="form-signin">
+        <img src="./public/assets/userLogo.png" alt="" srcset="" class="">
+        <input type="text" class="form-control" name="u" placeholder="Username / Email Address" required=""
+          autofocus="" />
+        <input type="password" class="form-control" name="p" placeholder="Password" required="" />
+        <button class="btn btn-md btn-primary btn-block mt-2" type="submit">Login</button>
+      </form>
+      <form action="/forgot" method="post">
+        <button type="submit">Forget Password</button>
+      </form>
+    </div>
+  </div>
+  <%- include("includes/foot") %>
