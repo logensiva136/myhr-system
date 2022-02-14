@@ -1,14 +1,14 @@
-const express = require("express");
-const devController = require("../controller/dev");
-const route = express.Router();
+// const express = require("express");
+// const devController = require("../controller/user");
+// const route = express.Router();
 
-route.get("/logen", devController.getLogen);
+// route.get("/logen", devController.getLogen);
 
-route.get("/att", devController.getAtt);
+// route.get("/att", devController.getAtt);
 
-route.get("/", devController.getHome);
+// route.get("/", devController.getHome);
 
-route.get("/login", devController.getLogin);
+// route.get("/login", devController.getLogin);
 
 
-module.exports = route;
+// module.exports = route;
