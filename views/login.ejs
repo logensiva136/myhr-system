@@ -1,16 +1,33 @@
 <%- include("includes/head") %>
-  <div class="d-flex align-items-center vh-100 justify-content-center" style="background-color:#072227">
-    <div class="wrapper p-3 rounded" style="background-color:white ">
-      <form class="form-signin">
-        <img src="./public/assets/userLogo.png" alt="" srcset="" class="">
-        <input type="text" class="form-control" name="u" placeholder="Username / Email Address" required=""
-          autofocus="" />
-        <input type="password" class="form-control" name="p" placeholder="Password" required="" />
-        <button class="btn btn-md btn-primary btn-block mt-2" type="submit">Login</button>
-      </form>
-      <form action="/forgot" method="post">
-        <button type="submit">Forget Password</button>
-      </form>
-    </div>
+<div class="h-100 bg-dark text-center" style="padding: 70px;">
+  <p class="display-4" style="color:white">
+    <bold>MyHR System</bold>
+  </p>
+  <p class="display-6" style="color:white">
+    <bold><%= forgot ? "Forgot Password" :"Login"%></bold>
+  </p>
+  <div style="width: fit-content; padding: 10px; margin:auto; " class="bg-white rounded">
+    <img
+      src="https://us.123rf.com/450wm/tuktukdesign/tuktukdesign1608/tuktukdesign160800043/61010830-user-icon-man-profile-businessman-avatar-person-glyph-vector-illustration.jpg?ver=6"
+      alt="" style="width: 50px; bottom:100">
+    <form action="<%= !forgot ? "/login" : "/forgot" %>" method="post" class="pt-2 pb-2">
+      <div class="mb-2 pt-1 pb-1 pe-2 rounded"
+        style="background-color: #495371;width: fit-content; height: 60px; margin:auto">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png"
+          style="height:50px;margin: 0;" alt=""><input type="text" name="username"
+          style="outline:nane;height:50px; margin:0;">
+      </div>
+      <% if(!forgot){ %>
+      <div class=" mb-2 pt-1 pb-1 pe-2 rounded"
+        style="background-color: #495371;width: fit-content; height: 60px; margin:auto">
+        <img src="https://cdn3.iconfinder.com/data/icons/wpzoom-developer-icon-set/500/104-512.png"
+          style="height:50px;margin: 0;" alt=""><input type="password" name="password"
+          style="outline:nane;height:50px; margin:0;">
+      </div>
+      <% } %>
+      <p><%= error === "user" ? "Username doesn't exist!" : error === "pass" ? "Password incorrect!" : "" %></p>
+      <button class="m-1 btn btn-outline-success" type="submit"><%= !forgot ? "Login" : "Send Password" %></button>
+      <a class="m-1 btn btn-outline-secondary" href="/forgot" <%= forgot ? "hidden" : "" %>>Forgot Password</a><br>
+    </form>
   </div>
-  <%- include("includes/foot") %>
+</div> <%- include("includes/foot") %>

@@ -1,0 +1,43 @@
+<%- include('includes/head') %>
+<%- include("includes/sidebar", {role:role} ) %>
+<%- include("includes/img") %>
+
+
+<div id="topPusher" class="">
+    <table class="leaveTable">
+        <tr>
+            <th>Leave Type</th>
+            <th>Leave Balance</th>
+            <th>Leave Approved</th>
+        </tr>
+        <tr>
+            <td>Medical Leave</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Annual Leave</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Hospitalization Leave</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Maternity Leave</td>
+            <td></td>
+        </tr>
+    </table>
+    <hr>
+    <form action="/applyLeave" class="">
+        <h2 class="mb-5 text-center">Apply Leave</h2>
+        <div>
+            <input style="" type="date" name="startDate" id="" placeholder="Start">
+            <input style="" type="date" name="startDate" id="" placeholder="Start">
+        </div>
+        <input type="textarea" name="reason" id="" placeholder="Reason">
+        <input type="file">
+        <button type="submit" class="btn btn-primary">Request Leave</button>
+    </form>
+</div>
+
+<%- include('includes/foot') %>

@@ -1,36 +1,14 @@
-<div
-  id="sidebar"
-  class="dark-blue col-2 vh-100 d-flex justify-content-start flex-column align-items-stretch"
->
-  <span class="text-center display-6">{username}</span>
-  <a
-    href="att"
-    class="w-100 text-center text-decoration-none light-font-color pt-2 pb-2"
-    >Clock In / Out</a
-  >
-  <a
-    href="#"
-    class="w-100 text-center text-decoration-none light-font-color pt-2 pb-2"
-    >b</a
-  >
-  <a
-    href="#"
-    class="w-100 text-center text-decoration-none light-font-color pt-2 pb-2"
-    >c</a
-  >
-  <a
-    href="#"
-    class="w-100 text-center text-decoration-none light-font-color pt-2 pb-2"
-    >d</a
-  >
-  <a
-    href="#"
-    class="w-100 text-center text-decoration-none light-font-color pt-2 pb-2"
-    >e</a
-  >
-  <a
-    href="/logout"
-    class="w-100 text-center text-decoration-none light-font-color pt-2 pb-2"
-    >Log Out</a
-  >
+<div id="sidebar" class="bg-dark p-2 position-fixed h-100">
+  <span class="text-center display-6 w-100 d-block">{username}</span>
+  <a href="att" class="d-block w-100 text-center text-decoration-none light-font-color pt-2 pb-2">Clock In / Out</a>
+  <% if(role === "admin"){ %>
+  <a href="adduser" class="d-block w-100 text-center text-decoration-none light-font-color pt-2 pb-2">Register User</a>
+  <% } %>
+  <a href="eleave" class="d-block w-auto text-center text-decoration-none light-font-color pt-2 pb-2">eLeave</a>
+  <a href="eclaim" class="d-block w-100 text-center text-decoration-none light-font-color pt-2 pb-2">eClaim</a>
+  <a href="smartPlanner" class="d-block w-100 text-center text-decoration-none light-font-color pt-2 pb-2">Smart
+    Planner</a>
+  <a href="setting" class="d-block w-100 text-center text-decoration-none light-font-color pt-2 pb-2">Setting</a>
+  <a href="/logout" class="d-block w-100 text-center text-decoration-none light-font-color pt-2 pb-2">Log Out</a>
 </div>
+<div id="body" class="p-2 h-100">
