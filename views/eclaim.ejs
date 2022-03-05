@@ -1,0 +1,24 @@
+<%- include("includes/head") %>
+<%- include("includes/sidebar") %>
+<%- include("includes/img") %>
+
+<div id="topPusher">
+    <table class="noBorderTable">
+        <tr>
+            <th>Number of Claim(s)</th>
+            <td class="text-center">123</td>
+        </tr>
+        <tr>
+            <th>Total (RM)</th>
+            <td class="text-center">RM 123</td>
+        </tr>
+    </table>
+    <div>
+        <form action="/eclaim" method="post" class="form-custom">
+            <p>Date : <%= ecDt %></p><input type="text" name="" id="">
+            <input type="text" name="" id="">
+            <input type="text" name="" id="">
+        </form>
+    </div>
+</div>
+<%- include("includes/foot") %>

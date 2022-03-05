@@ -8,7 +8,7 @@
 <%- include("includes/img") %>
 
 <!-- content box  -->
-<div class="h-100 text-center">
+<div id="topPusher" class=" text-center">
   <!-- clock -->
   <p id="realTimeClock" class="display-4"></p>
   <div>
@@ -20,26 +20,23 @@
     </form>
     <hr>
     <!-- table  -->
-    <table class="table rounded ">
-      <thead>
-        <tr>
-          <th scope="col">Date</th>
-          <th scope="col">Clock In</th>
-          <th scope="col">Reason</th>
-          <th scope="col">Clock Out</th>
-          <th scope="col">Reason</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>date</td>
-          <td>in</td>
-          <td>Reason</td>
-          <td>out</td>
-          <td>Reason</td>
-        </tr>
-      </tbody>
+    <table class="leaveTable">
+      <tr>
+        <th>Date</th>
+        <th>Clock In</th>
+        <th>Reason</th>
+        <th>Clock Out</th>
+        <th>Reason</th>
+      </tr>
+      <tr>
+        <td>date</td>
+        <td>in</td>
+        <td>Reason</td>
+        <td>out</td>
+        <td>Reason</td>
+      </tr>
     </table>
+
   </div>
 </div>
 

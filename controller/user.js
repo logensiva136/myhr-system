@@ -1,8 +1,9 @@
 const axios = require("axios");
-const passport = require("passport");
-const LocalStrategy = require("passport-local").Strategy
 const userDB = require("../models/userdb")
 const nodemailer = require("nodemailer");
+const calendar = require('calendar');
+const cal = new calendar.Calendar();
+
 
 var transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -14,9 +15,14 @@ var transporter = nodemailer.createTransport({
 
 
 exports.getLogen = (req, res, next) => {
-  res.render("home", {
-    username: "auto generated username"
-  });
+  if (req.session.user) {
+
+    res.render("home", {
+      username: "auto generated username"
+    });
+  } else {
+    res.render("401")
+  }
 };
 
 exports.getAtt = (req, res, next) => {
@@ -24,14 +30,16 @@ exports.getAtt = (req, res, next) => {
   res.render("att", {
     btnVisible: a.getHours() > 6 || a.getHours() < 24 ? true : false,
     clockInState: false,
-    clockOutState: true
+    clockOutState: true,
+    role: "admin"
   });
 
 };
 
 exports.getHome = (req, res, next) => {
   res.render("home", {
-    username: "logen"
+    username: "logen",
+    role: "admin"
   })
 };
 
@@ -39,7 +47,6 @@ exports.getHome = (req, res, next) => {
 exports.postLogin = (req, res, next) => {
   const u = req.body.username;
   const p = req.body.password;
-
 
   // userDB.getDetailsByUsername(req.body.username).then(data => {
   //   if (data < 1) {
@@ -93,18 +100,60 @@ exports.postForgot = (req, res, next) => {
 };
 
 exports.getAddUser = (req, res, next) => {
-  res.render("register")
+  res.render("register", {
+    role: "admin"
+  })
 }
 
 exports.getLogout = (req, res, next) => {
   res.render("login", {
-    error: ""
+    error: "",
+    forgot: false
   })
 }
 
 exports.getEleave = (req, res, next) => {
   res.render("eleave", {
-    error: "",
     role: "admin"
   })
 }
+
+// exports.getEleave = (req, res, next) => {
+//   res.render("eleave", {
+//     error: "",
+//     role: "admin"
+//   })
+// }
+
+exports.getSP = (req, res, next) => {
+  const today = new Date(); // today
+  // const totalDays = new Date(today.getMonth(), 2, 0) // days in this month
+  const thisDate = today.getDate();
+  const thisMonth = today.getMonth();
+  const thisYear = today.getYear();
+  console.log(thisDate)
+  // 1. total days
+  // 2. month
+  // 3. year
+  // 4. month + year = date place ?
+  // 5. save in object(date places)
+  // 6. loops days - > switch (year, month, date) = days ? & set to the box 
+  // 7. 
+
+  res.render("smartPlanner", {
+    role: "admin",
+    days: cal.monthDays(2022, 2),
+    todayDate: thisDate
+  })
+}
+
+exports.getClaim = (req, res, next) => {
+  res.render("eclaim", {
+    role: "admin",
+    ecDt: new Date().toLocaleDateString()
+  })
+};
+
+exports.postClaim = (req, res, next) => {
+  res.send("")
+};

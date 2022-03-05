@@ -13,12 +13,12 @@ setInterval(getTime, 900);
 
 //styling
 let pushWidth = document.getElementById("sidebar").offsetWidth;
-let pushHeigh = document.getElementById("homeico").offsetHeight;
+let pushHeight = document.getElementById("homeico").offsetHeight;
 
 pushWidth = pushWidth + "px";
 
-pushHeigh = pushHeigh + 10;
-pushHeigh = pushHeigh + "px";
+pushHeight = pushHeight + 10;
+pushHeight = pushHeight + "px";
 
 document.getElementById("body").style.marginLeft = pushWidth;
-document.getElementById("topPusher").style.marginTop = pushHeigh;
+document.getElementById("topPusher").style.marginTop = pushHeight;

@@ -22,4 +22,12 @@ route.get('/addUser', userController.getAddUser)
 
 route.get('/eleave', userController.getEleave)
 
+// route.post('/eleave', userController.postEleave)
+
+route.get('/sp', userController.getSP)
+
+route.get('/eclaim', userController.getClaim)
+
+route.post('/eclaim', userController.postClaim)
+
 module.exports = route;

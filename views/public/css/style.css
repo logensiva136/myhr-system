@@ -69,8 +69,8 @@ body,
 
 /* default form 👆 */
 
-/* Leave Table 👇 */
-.leaveTable {
+/* No Border Table 👇 */
+.noBorderTable {
   margin: 0;
   margin-left: auto;
   margin-right: auto;
@@ -82,7 +82,7 @@ body,
   background: rgb(214, 213, 213);
 }
 
-.leaveTable th,
+.noBorderTable th,
 td,
 tr {
   padding: 10px;
@@ -90,4 +90,12 @@ tr {
 }
 
 
-/* Leave Table 👆 */
+/* No Border Table 👆 */
+
+/* calendar 👇 */
+
+.dateColor {
+  color: rgb(25, 87, 255);
+}
+
+/* calendar 👆 */
