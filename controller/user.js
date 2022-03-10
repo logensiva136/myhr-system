@@ -157,3 +157,17 @@ exports.getClaim = (req, res, next) => {
 exports.postClaim = (req, res, next) => {
   res.send("")
 };
+
+exports.getSetting = (req, res, next) => {
+  res.render('setting', {
+    role: "admin",
+    ecDt: new Date().toLocaleDateString()
+  })
+};
+
+exports.postSetting = (req, res, next) => {
+  res.send("setting", {
+    role: "admin",
+    ecDt: new Date().toLocaleDateString()
+  })
+};

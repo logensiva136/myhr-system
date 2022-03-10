@@ -1,0 +1,47 @@
+<%- include('includes/head') %>
+
+<%- include("includes/sidebar") %>
+<%- include("includes/img") %>
+<div id="topPusher" class="">
+    <form action="/addUser" class="form-control form-custom">
+        <h2 class="mb-5 text-center">Enter Employee Details</h2>
+        <input type="text" name="idnum" id="idnum" disabled="true" placeholder="Employee ID">
+        <div>
+            <input type="text" name="fname" id="employeeName" placeholder="First Name">
+            <input type="text" name="lname" id="employeeName" placeholder="Last Name">
+        </div>
+        <div>
+            <input type="date" name="dob" id="" placeholder="Date Of Birth">
+            <input type="text" style="width: auto;" disabled="true" name="dob" id="" value="Age : 99">
+        </div>
+        <select name="gender" id="">
+            <option value="none">-- Gender --</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+        <input type="text" placeholder="Position" name="position" id="position">
+        <input type="text" placeholder="Salary" name="salary" id="salary">
+        <button type="submit" class="btn btn-primary">Create Profile</button>
+        <button type="reset" class="btn btn-danger">Clear Information</button>
+    </form>
+</div>
+
+<!-- 
+name
+username
+age
+gender
+position
+salary
+id (idnum) -> {
+    employeeId (incremental - 5 digit)
+== incremental -> 
+1. check total employee frm db = 4 - rows count
+2. check digit 4 is !>10 = 4 zeros 
+3. create "0000" + "4" .toDigit
+4. save }
+-->
+
+
+
+<%- include('includes/foot') %>

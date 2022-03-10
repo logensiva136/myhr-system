@@ -30,4 +30,8 @@ route.get('/eclaim', userController.getClaim)
 
 route.post('/eclaim', userController.postClaim)
 
+route.get('/setting', userController.getSetting)
+
+// route.post('/eclaim', userController.postSetting)
+
 module.exports = route;

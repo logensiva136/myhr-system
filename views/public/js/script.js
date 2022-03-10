@@ -22,3 +22,4 @@ pushHeight = pushHeight + "px";
 
 document.getElementById("body").style.marginLeft = pushWidth;
 document.getElementById("topPusher").style.marginTop = pushHeight;
+document.getElementById("topPusher").style.marginBottom = "1.5rem";

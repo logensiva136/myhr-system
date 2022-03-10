@@ -1,5 +1,6 @@
 * {
   outline: none;
+  box-sizing: border-box;
 }
 
 .dark-blue {
@@ -39,22 +40,38 @@ body,
 }
 
 /* default form 👇 */
-.form-custom input {
+
+.form-custom input,
+select,
+textarea {
+  background-color: white;
   text-align: center;
   margin: auto;
   display: block;
-  width: 400px;
   margin-top: 10px;
   margin-bottom: 30px;
   border: 0;
-  border-bottom: solid 1px black;
-  transition: all 0.7s;
+  border-radius: 6px;
+  padding: 2px;
+  width: auto;
 }
 
-.form-custom input:focus {
-  border: solid 1px black;
-  border-bottom: solid 5px black;
+.form-custom div * {
+  display: inline;
 }
+
+.form-custom input:hover,
+textarea:hover,
+select:hover {
+  background: rgb(243, 243, 243);
+}
+
+.form-custom input:focus,
+textarea:focus,
+select:focus {
+  background: rgb(204, 204, 204);
+}
+
 
 .form-custom button {
   display: block;

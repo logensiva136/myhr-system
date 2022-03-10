@@ -2,22 +2,45 @@
 <%- include("includes/sidebar") %>
 <%- include("includes/img") %>
 
-<div id="topPusher">
+<div id="topPusher" class="mb-4">
     <table class="noBorderTable">
         <tr>
-            <th>Number of Claim(s)</th>
+            <th>Approved Claim(s)</th>
             <td class="text-center">123</td>
         </tr>
         <tr>
-            <th>Total (RM)</th>
+            <th>Rejected Claim(s)</th>
+            <td class="text-center">123</td>
+        </tr>
+        <tr>
+            <th>Pending Claim(s)</th>
+            <td class="text-center">123</td>
+        </tr>
+        <tr>
+            <th>Total Claimed (RM)</th>
             <td class="text-center">RM 123</td>
         </tr>
     </table>
+    <hr>
     <div>
-        <form action="/eclaim" method="post" class="form-custom">
-            <p>Date : <%= ecDt %></p><input type="text" name="" id="">
-            <input type="text" name="" id="">
-            <input type="text" name="" id="">
+        <form action="/eclaim" method="post" class="form-custom text-center">
+            <div>
+                <p>Date : <%= ecDt %></p>
+                <select class="ms-2" style="border-radius: 5px;" name="typeOfClaim" id="">
+                    <option value="none">-- Claim Type --</option>
+                    <option value="travel">Travel Claim</option>
+                    <option value="petrol">Petrol Claim</option>
+                    <option value="others">Others Claim</option>
+                    <option value="maternity">Maternity Claim</option>
+                    <option value="dental">Dental Claim</option>
+                    <option value="entertainment">Entertainment Claim</option>
+                </select>
+            </div>
+            <input type="text" name="" id="" placeholder="Bill / Invoice No.">
+            <textarea name="" placeholder="Justification"></textarea>
+            <p>Upload Receipt:</p>
+            <input type="file" name="" id="" placeholder="">
+            <button type="submit" class="btn btn-primary">Submit Claim</button>
         </form>
     </div>
 </div>
