@@ -10,19 +10,18 @@ require('dotenv').config();
 
 const app = express();
 
-//set session
+//set cookie & session
+//3600000
+app.use(cookieParser());
 app.use(session({
   secret: 'this is secret session key also cookie',
-  cookie: {
-    maxAge: 30000,
-    secure: true,
-    httpOnly: true
-  },
+  saveUninitialized: true,
   resave: false,
-  saveUninitialized: false,
+  cookie: {
+    maxAge: 3600000
+  }
 }));
 
-app.use(cookieParser());
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -32,17 +31,15 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-const adminRouter = require("./routes/admin");
+// const adminRouter = require("./routes/admin");
 const userRouter = require("./routes/user");
 
-app.use("/admin", adminRouter);
+// app.use("/admin", adminRouter);
 app.use("/", userRouter);
 
-
 app.use((req, res) => {
-  req.session.username = "logen"
   res.render("404")
-});
+})
 
 app.listen(9000, (req, res, next) => {
   console.log("Listening : http://localhost:9000");

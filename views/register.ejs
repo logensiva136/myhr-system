@@ -3,14 +3,33 @@
 <%- include("includes/sidebar") %>
 <%- include("includes/img") %>
 <div id="topPusher" class="">
-    <form action="/addUser" class="form-control form-custom">
+    <form action="/addUser" method="post" class="form-control form-custom">
         <h2 class="mb-5 text-center">Enter Employee Details</h2>
-        <input type="text" name="idnum" id="idnum" placeholder="Employee ID">
-        <input type="text" name="employeeName" id="employeeName" placeholder="Name">
-        <input type="text" name="age" id="age" placeholder="Age">
-        <input type="text" name="gender" id="gender" placeholder="Gender">
-        <input type="text" placeholder="Position" name="position" id="position">
-        <input type="text" placeholder="Salary" name="salary" id="salary">
+        <!-- <input type="text" name="idnum" id="idnum" placeholder="Employee ID"> -->
+        <div>
+            <input type="text" name="fname" id="" placeholder="First Name" required>
+            <input type="text" name="lname" id="" placeholder="Last Name" required>
+        </div>
+        <div class="text-center">
+            <p>Date of Birth : </p><input type="date" name="dob" id="age" placeholder="Age" required>
+        </div>
+        <!-- <input type="text" name="gender" id="gender" placeholder="Gender"> -->
+        <select name="gender" id="" class="text-center" required>
+            <option value="">--- Gender ---</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="text" placeholder="Position" name="position" id="position" required>
+        <input type="number" min="0" max="99999" placeholder="Salary" name="salary" id="salary" required>
+        <select name="userRole" id="" class="text-center" required>
+            <option value="">--- User Role ---</option>
+            <option value="admin">Aministrator</option>
+            <option value="use">User</option>
+        </select>
+        <p class="text-center" style="color: red;"><strong>
+                <%= error === "age" ? "Age must be greater than 17" : error === "username" ? "Username exist!" : "" %></strong>
+        </p>
         <button type="submit" class="btn btn-primary">Create Profile</button>
         <button type="reset" class="btn btn-danger">Clear Information</button>
     </form>

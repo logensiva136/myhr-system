@@ -15,13 +15,14 @@ var transporter = nodemailer.createTransport({
 
 
 exports.getLogen = (req, res, next) => {
-  if (req.session.user) {
-
+  if (req.session.username) {
     res.render("home", {
-      username: "auto generated username"
+      username: "auto generated username",
+      role: "admin"
     });
+
   } else {
-    res.render("401")
+    res.redirect("/401")
   }
 };
 
@@ -37,34 +38,44 @@ exports.getAtt = (req, res, next) => {
 };
 
 exports.getHome = (req, res, next) => {
-  res.render("home", {
-    username: "logen",
-    role: "admin"
-  })
+  if (req.session.username) {
+    if (req.session.ftl) {
+      res.redirect("/cp");
+    } else {
+      res.render("home", {
+        username: req.session.fn,
+        role: "admin"
+      })
+    }
+  } else {
+    res.redirect('/401');
+  }
 };
 
 
 exports.postLogin = (req, res, next) => {
   const u = req.body.username;
-  const p = req.body.password;
-
-  // userDB.getDetailsByUsername(req.body.username).then(data => {
-  //   if (data < 1) {
-  //     res.render("login", {
-  //       error: "user"
-  //     })
-  //   } else if (data[0].password !== req.body.password) {
-  //     res.render("login", {
-  //       error: "pass"
-  //     })
-  //   } else {
-  //     req.session.isLoggedIn = true;
-  //     req.session.username = data[0].username;
-  //     req.session.username = data[0].user_role;
-  //     req.session.username = data[0].name;
-  //     res.redirect("/")
-  //   }
-  // })
+  userDB.getDetailsByUsername(req.body.username).then(data => {
+    if (data < 1) {
+      res.render("login", {
+        error: "user",
+        forgot: false
+      })
+    } else if (data[0].password !== req.body.password) {
+      res.render("login", {
+        error: "pass",
+        forgot: false
+      })
+    } else {
+      req.session.username = data[0].username;
+      req.session.email = data[0].email;
+      req.session.role = data[0].user_role;
+      req.session.fn = data[0].first_name;
+      req.session.ftl = data[0].ftl;
+      req.session.rowId = data[0].id;
+      res.redirect("/");
+    }
+  }).catch(err => console.error(err))
 }
 
 exports.getLogin = (req, res, next) => {
@@ -73,6 +84,25 @@ exports.getLogin = (req, res, next) => {
     forgot: false
   });
 };
+
+exports.getCP = (req, res, next) => {
+  if (req.session.ftl) {
+    res.render('changePass');
+  } else {
+    res.redirect("/");
+  }
+}
+
+exports.postCP = (req, res, next) => {
+  if (req.body.password) {
+    userDB.patchUserPassword(req.session.rowId, req.body.password);
+    req.session.ftl = false;
+    res.redirect("/");
+  } else {
+    res.redirect('/cp');
+  }
+
+}
 
 exports.getForgot = (req, res, next) => {
   res.render("login", {
@@ -101,11 +131,44 @@ exports.postForgot = (req, res, next) => {
 
 exports.getAddUser = (req, res, next) => {
   res.render("register", {
-    role: "admin"
+    role: "admin",
+    error: ""
   })
 }
 
+exports.postAddUser = (req, res, next) => {
+
+  var today = new Date();
+  var birthDate = new Date(req.body.dob);
+  var age = today.getFullYear() - birthDate.getFullYear();
+  --age;
+
+  let achecker = false;
+  if (age < 18) {
+    achecker = false
+    res.render("register", {
+      role: "admin",
+      error: "age"
+    })
+  } else {
+    achecker = true
+  }
+
+  userDB.getDetailsByUsername(req.body.username).then(uchecker => {
+
+    if (!(uchecker.length > 0) && achecker) {
+      userDB.postNewUser(req.body.fname, req.body.lname, req.body.username, req.body.dob, req.body.gender, req.body.position, req.body.salary, req.body.userRole);
+      res.redirect('/')
+    }
+    res.render("register", {
+      role: "admin",
+      error: "username"
+    })
+  }).catch(err => console.log(err))
+}
+
 exports.getLogout = (req, res, next) => {
+  req.session.destroy();
   res.render("login", {
     error: "",
     forgot: false
@@ -171,3 +234,8 @@ exports.postSetting = (req, res, next) => {
     ecDt: new Date().toLocaleDateString()
   })
 };
+
+
+exports.au = (req, res) => {
+  res.render("401")
+}
