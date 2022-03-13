@@ -13,39 +13,33 @@ var transporter = nodemailer.createTransport({
   }
 });
 
-
-exports.getLogen = (req, res, next) => {
-  if (req.session.username) {
-    res.render("home", {
-      username: "auto generated username",
-      role: "admin"
-    });
-
-  } else {
-    res.redirect("/401")
-  }
-};
-
 exports.getAtt = (req, res, next) => {
   let a = new Date();
   res.render("att", {
     btnVisible: a.getHours() > 6 || a.getHours() < 24 ? true : false,
     clockInState: false,
     clockOutState: true,
-    role: "admin"
+    role: req.session.role
   });
-
 };
 
 exports.getHome = (req, res, next) => {
   if (req.session.username) {
     if (req.session.ftl) {
-      res.redirect("/cp");
+      if (req.session.currentDir) {
+        res.redirect(req.session.currentDir);
+      } else {
+        res.redirect("/cp");
+      }
     } else {
-      res.render("home", {
-        username: req.session.fn,
-        role: "admin"
-      })
+      if (req.session.currentDir) {
+        res.redirect(req.session.currentDir);
+      } else {
+        res.render("home", {
+          username: req.session.fn,
+          role: req.session.role
+        });
+      }
     }
   } else {
     res.redirect('/401');
@@ -60,12 +54,12 @@ exports.postLogin = (req, res, next) => {
       res.render("login", {
         error: "user",
         forgot: false
-      })
+      });
     } else if (data[0].password !== req.body.password) {
       res.render("login", {
         error: "pass",
         forgot: false
-      })
+      });
     } else {
       req.session.username = data[0].username;
       req.session.email = data[0].email;
@@ -130,10 +124,16 @@ exports.postForgot = (req, res, next) => {
 };
 
 exports.getAddUser = (req, res, next) => {
-  res.render("register", {
-    role: "admin",
-    error: ""
-  })
+  if (req.session.username) {
+    res.render("register", {
+      role: req.session.role,
+      username: req.session.username,
+      error: ""
+    });
+  } else {
+    req.session.currentDir = req.originalUrl;
+    res.redirect('/');
+  }
 }
 
 exports.postAddUser = (req, res, next) => {
@@ -141,13 +141,12 @@ exports.postAddUser = (req, res, next) => {
   var today = new Date();
   var birthDate = new Date(req.body.dob);
   var age = today.getFullYear() - birthDate.getFullYear();
-  --age;
-
   let achecker = false;
+
   if (age < 18) {
     achecker = false
     res.render("register", {
-      role: "admin",
+      role: req.session.role,
       error: "age"
     })
   } else {
@@ -161,7 +160,7 @@ exports.postAddUser = (req, res, next) => {
       res.redirect('/')
     }
     res.render("register", {
-      role: "admin",
+      role: req.session.role,
       error: "username"
     })
   }).catch(err => console.log(err))
@@ -177,7 +176,7 @@ exports.getLogout = (req, res, next) => {
 
 exports.getEleave = (req, res, next) => {
   res.render("eleave", {
-    role: "admin"
+    role: req.session.role
   })
 }
 
@@ -194,17 +193,9 @@ exports.getSP = (req, res, next) => {
   const thisDate = today.getDate();
   const thisMonth = today.getMonth();
   const thisYear = today.getYear();
-  console.log(thisDate)
-  // 1. total days
-  // 2. month
-  // 3. year
-  // 4. month + year = date place ?
-  // 5. save in object(date places)
-  // 6. loops days - > switch (year, month, date) = days ? & set to the box 
-  // 7. 
 
   res.render("smartPlanner", {
-    role: "admin",
+    role: req.session.role,
     days: cal.monthDays(2022, 2),
     todayDate: thisDate
   })
@@ -212,7 +203,7 @@ exports.getSP = (req, res, next) => {
 
 exports.getClaim = (req, res, next) => {
   res.render("eclaim", {
-    role: "admin",
+    role: req.session.role,
     ecDt: new Date().toLocaleDateString()
   })
 };
@@ -230,11 +221,10 @@ exports.getSetting = (req, res, next) => {
 
 exports.postSetting = (req, res, next) => {
   res.send("setting", {
-    role: "admin",
+    role: req.session.role,
     ecDt: new Date().toLocaleDateString()
   })
 };
-
 
 exports.au = (req, res) => {
   res.render("401")

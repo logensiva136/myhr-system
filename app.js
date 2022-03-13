@@ -7,11 +7,13 @@ const path = require("path");
 const session = require('express-session');
 const cookieParser = require("cookie-parser");
 require('dotenv').config();
+require('events').EventEmitter.defaultMaxListeners = 100;
 
 const app = express();
 
 //set cookie & session
 //3600000
+
 app.use(cookieParser());
 app.use(session({
   secret: 'this is secret session key also cookie',
