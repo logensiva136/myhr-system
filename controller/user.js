@@ -161,6 +161,7 @@ exports.postAddUser = (req, res, next) => {
     }
     res.render("register", {
       role: req.session.role,
+        username:req.session.username,
       error: "username"
     })
   }).catch(err => console.log(err))
