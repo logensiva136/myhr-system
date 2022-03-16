@@ -11,9 +11,6 @@ require('events').EventEmitter.defaultMaxListeners = 100;
 
 const app = express();
 
-//set cookie & session
-//3600000
-
 app.use(cookieParser());
 app.use(session({
   secret: 'this is secret session key also cookie',
@@ -24,25 +21,25 @@ app.use(session({
   }
 }));
 
-
 app.set("view engine", "ejs");
 app.set("views", "views");
 app.use(express.static(path.join(__dirname, "views", "public")));
+
+app.use((req,res)=>console.log("triggered"))
 
 app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-// const adminRouter = require("./routes/admin");
 const userRouter = require("./routes/user");
+const { listeners } = require("process");
 
-// app.use("/admin", adminRouter);
 app.use("/", userRouter);
 
 app.use((req, res) => {
-  res.render("404")
+  res.render("404");
 })
 
-app.listen(9000, (req, res, next) => {
+app.listen(12344, (req, res, next) => {
   console.log("Listening : http://localhost:9000");
 });

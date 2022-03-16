@@ -1,8 +1,7 @@
 <%- include('includes/head') %>
-
 <%- include("includes/sidebar") %>
 <%- include("includes/img") %>
-<div id="topPusher" class="">
+<div id="topPusher">
     <form action="/addUser" class="form-control form-custom">
         <h2 class="mb-5 text-center">Enter Employee Details</h2>
         <input type="text" name="idnum" id="idnum" disabled="true" placeholder="Employee ID">
@@ -19,23 +18,4 @@
         <button type="reset" class="btn btn-danger">Clear Information</button>
     </form>
 </div>
-
-<!-- 
-name
-username
-age
-gender
-position
-salary
-id (idnum) -> {
-    employeeId (incremental - 5 digit)
-== incremental -> 
-1. check total employee frm db = 4 - rows count
-2. check digit 4 is !>10 = 4 zeros 
-3. create "0000" + "4" .toDigit
-4. save }
--->
-
-
-
 <%- include('includes/foot') %>

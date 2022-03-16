@@ -3,8 +3,8 @@
   box-sizing: border-box;
 }
 
-.dark-blue {
-  background-color: #072227;
+.sb-color {
+  background-color: #1572a1;
 }
 
 .light-font-color {
@@ -14,6 +14,10 @@
 #sidebar a:hover {
   background: #165d6a;
   color: white;
+}
+
+#sidebar a {
+  font-weight: 600;
 }
 
 #sidebar span {
@@ -115,13 +119,50 @@ tr {
 
 /* calendar 👆 */
 
+/* number spin button hider code 👇 */
+
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
+  /* chrome */
   -webkit-appearance: none;
   margin: 0;
 }
 
 input[type=number] {
-  -moz-appearance: textfield;
   /* Firefox */
+  -moz-appearance: textfield;
 }
+
+/* number spin button hider code 👆 */
+
+/* recent container style 👇 */
+
+.recent{
+  border-radius: 10px;
+  background: rgb(242, 242, 242);
+  padding: 10px;
+  margin: 20px;
+  /* margin-top: 100px; */
+}
+
+.recent div{
+  text-align: center;
+  padding: 10px 0;
+}
+
+.recent div div{
+  display: inline-block;
+  font-size: large;
+  width: 50px;
+  height: 50px;
+  margin: 0px 30px;
+  background: rgb(221, 221, 221);
+  border-radius: 50%;
+  transition: 0.5s all ;
+}
+
+.recent div div:hover{
+  background: rgb(197, 197, 197);
+}
+
+/* recent container style 👆 */
