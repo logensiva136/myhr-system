@@ -36,14 +36,13 @@ app.use(
 );
 
 const userRouter = require("./routes/user");
-const { listeners } = require("process");
 
 app.use("/", userRouter);
 
 app.use((req, res) => {
   res.render("404");
 });
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 12345;
 app.listen(port, "0.0.0.0", (req, res, next) => {
   console.log("Listening : http://localhost:" + port);
 });
