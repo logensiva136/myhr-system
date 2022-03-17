@@ -4,4 +4,5 @@ WORKDIR /
 COPY ["package.json", "package-lock.json*", "./"]
 RUN npm install
 COPY . .
+EXPOSE 12345
 CMD [ "nodemon", "app.js" ]
