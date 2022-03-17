@@ -27,7 +27,7 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 app.use(express.static(path.join(__dirname, "views", "public")));
 
-app.use((req, res) => console.log("triggered"));
+// app.use((req, res) => console.log("triggered"));
 
 app.use(
   bodyParser.urlencoded({
@@ -43,6 +43,6 @@ app.use((req, res) => {
   res.render("404");
 });
 const port = process.env.PORT || 12345;
-app.listen(port, "0.0.0.0", (req, res, next) => {
+app.listen(1234, "0.0.0.0", (req, res, next) => {
   console.log("Listening : http://localhost:" + port);
 });
