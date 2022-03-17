@@ -40,6 +40,6 @@ app.use((req, res) => {
   res.render("404");
 })
 
-app.listen(12344, (req, res, next) => {
-  console.log("Listening : http://localhost:9000");
+app.listen(12345,'0.0.0.0', (req, res, next) => {
+  console.log("Listening : http://localhost:12345");
 });
