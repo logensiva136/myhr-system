@@ -1,16 +1,7 @@
 const userDB = require("../models/userdb");
-const nodemailer = require("nodemailer");
 const calendar = require("calendar");
 const cal = new calendar.Calendar();
 const recentArr = [];
-
-var transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "youremail@gmail.com",
-    pass: "yourpassword",
-  },
-});
 
 exports.getAtt = (req, res, next) => {
   let a = new Date();
@@ -48,7 +39,6 @@ exports.getHome = (req, res, next) => {
 };
 
 exports.postLogin = (req, res, next) => {
-  const u = req.body.username;
   userDB
     .getDetailsByUsername(req.body.username)
     .then((data) => {
@@ -70,7 +60,6 @@ exports.postLogin = (req, res, next) => {
         req.session.ln = data[0].last_name;
         req.session.ftl = data[0].ftl;
         req.session.rowId = data[0].id;
-
         res.redirect("/");
       }
     })
@@ -137,7 +126,7 @@ exports.getAddUser = (req, res, next) => {
     // const newArr = [];
     if (recentArr.length < 1) {
       recentArr.push("R");
-    }else{
+    } else {
       recentArr.push(...recentArr);
     }
     req.cookies.recent = JSON.stringify(recentArr);
@@ -217,8 +206,7 @@ exports.getEleave = (req, res, next) => {
 // }
 
 exports.getSP = (req, res, next) => {
-  const today = new Date(); // today
-  // const totalDays = new Date(today.getMonth(), 2, 0) // days in this month
+  const today = new Date();
   const thisDate = today.getDate();
   const thisMonth = today.getMonth();
   const thisYear = today.getYear();

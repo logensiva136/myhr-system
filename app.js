@@ -11,21 +11,21 @@ require('events').EventEmitter.defaultMaxListeners = 100;
 
 const app = express();
 
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(session({
-  secret: 'this is secret session key also cookie',
+  secret: process.env.COOKIE_SECRET,
   saveUninitialized: true,
   resave: false,
-  cookie: {
-    maxAge: 3600000
-  }
+  // cookie: {
+  //   maxAge: 3600000
+  // }
 }));
 
 app.set("view engine", "ejs");
 app.set("views", "views");
 app.use(express.static(path.join(__dirname, "views", "public")));
 
-app.use((req,res)=>console.log("triggered"))
+// app.use((req,res)=>console.log("triggered"))
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -40,6 +40,6 @@ app.use((req, res) => {
   res.render("404");
 })
 
-app.listen(12345,'0.0.0.0', (req, res, next) => {
+app.listen(12345, (req, res, next) => {
   console.log("Listening : http://localhost:12345");
 });
