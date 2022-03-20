@@ -1,30 +1,24 @@
 const userDB = require("../models/userdb");
 const calendar = require("calendar");
+const session = require("express-session");
 const cal = new calendar.Calendar();
 const recentArr = [];
-
-exports.getAtt = (req, res, next) => {
-  let a = new Date();
-  res.render("att", {
-    btnVisible: a.getHours() > 6 || a.getHours() < 24 ? true : false,
-    clockInState: false,
-    clockOutState: true,
-    role: req.session.role,
-    username: req.session.fn,
-  });
-};
+const currentTime = new Date();
+var moment = require('moment');
 
 exports.getHome = (req, res, next) => {
   if (req.session.username) {
     if (req.session.ftl) {
       if (req.session.currentDir) {
         res.redirect(req.session.currentDir);
+        req.session.currentDir = "";
       } else {
         res.redirect("/cp");
       }
     } else {
       if (req.session.currentDir) {
         res.redirect(req.session.currentDir);
+        req.session.currentDir = "";
       } else {
         res.render("home", {
           fullname: req.session.fn + " " + req.session.ln,
@@ -36,6 +30,34 @@ exports.getHome = (req, res, next) => {
   } else {
     res.redirect("/401");
   }
+};
+
+exports.getAtt = (req, res, next) => {
+  if (req.session.username) {
+    userDB.getUserAtt(req.session.username).then((data) => {
+      console.log(data);
+      res.render("att", {
+        btnVisible: currentTime.getHours() > 6 ? true : false,
+        clockInOutState: data.in,
+        role: req.session.role,
+        username: req.session.fn,
+        data: data,
+        moment:moment
+      });
+    });
+  } else {
+    res.redirect("/401");
+  }
+};
+
+exports.postAtt = (req, res, next) => {
+  userDB
+    .getUserAtt(req.session.username)
+    .then((data) => {
+      userDB.postClockIn(req.session.username, req.session.rowId, "");
+      res.redirect(req.originalUrl);
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.postLogin = (req, res, next) => {
@@ -60,6 +82,7 @@ exports.postLogin = (req, res, next) => {
         req.session.ln = data[0].last_name;
         req.session.ftl = data[0].ftl;
         req.session.rowId = data[0].id;
+        req.session.redirect = "";
         res.redirect("/");
       }
     })
@@ -127,10 +150,11 @@ exports.getAddUser = (req, res, next) => {
     if (recentArr.length < 1) {
       recentArr.push("R");
     } else {
-      recentArr.push(...recentArr);
+      recentArr.pop("R");
+      recentArr.push("R", ...recentArr);
     }
-    req.cookies.recent = JSON.stringify(recentArr);
-    console.log(req.cookies);
+    req.cookie = "recents=" + recentArr;
+    console.log(req.cookie);
   } else {
     req.session.currentDir = req.originalUrl;
     res.redirect("/");
@@ -187,6 +211,12 @@ exports.getLogout = (req, res, next) => {
 };
 
 exports.getEleave = (req, res, next) => {
+  if (recentArr.length < 1) {
+    recentArr.push("L");
+  } else if (recentArr.includes("L")) {
+    recentArr.pop("L");
+    recentArr.push("L", ...recentArr);
+  }
   if (req.session.username) {
     res.render("eleave", {
       role: req.session.role,

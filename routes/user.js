@@ -3,6 +3,7 @@ const userController = require("../controller/user");
 const route = express.Router();
 
 route.get("/att", userController.getAtt);
+route.post("/att", userController.postAtt);
 
 route.get("/", userController.getHome);
 
@@ -12,21 +13,20 @@ route.post("/login", userController.postLogin);
 route.get("/forgot", userController.getForgot);
 route.post("/forgot", userController.postForgot);
 
-route.get('/logout', userController.getLogout)
+route.get("/logout", userController.getLogout);
 
-route.get('/addUser', userController.getAddUser)
-route.post('/addUser', userController.postAddUser)
+route.get("/addUser", userController.getAddUser);
+route.post("/addUser", userController.postAddUser);
 
-route.get('/eleave', userController.getEleave)
+route.get("/eleave", userController.getEleave);
 // route.post('/eleave', userController.postEleave)
 
-route.get('/sp', userController.getSP)
+route.get("/sp", userController.getSP);
 
-route.get('/eclaim', userController.getClaim)
-route.post('/eclaim', userController.postClaim)
+route.get("/eclaim", userController.getClaim);
+route.post("/eclaim", userController.postClaim);
 
-
-route.get('/setting', userController.getSetting)
+route.get("/setting", userController.getSetting);
 // route.post('/eclaim', userController.postSetting)
 
 route.get("/401", userController.au);

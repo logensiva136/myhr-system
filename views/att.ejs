@@ -8,17 +8,24 @@
 <%- include("includes/img") %>
 
 <!-- content box  -->
-<div id="topPusher" class=" text-center">
+<div id="topPusher" class="text-center">
   <!-- clock -->
   <p id="realTimeClock" class="display-4"></p>
   <div>
     <!-- submit btn -->
-    <form action="" class="">
-      <input type="submit" class="rounded b-no bg-warning <%=
-                ((btnVisible && !clockOutState) ?"":"d-none") %>" _+ value="Clock Out" /> <input type="submit" class="rounded b-no
-                bg-warning <%= ((btnVisible && !clockInState) ?"":"d-none") %>" value="Clock In" />
+    <form method="post" action="/att" class="">
+      <input
+        type="submit"
+        class="rounded b-no bg-warning <%= (btnVisible && !clockInOutState) ? '' : 'd-none' %>"
+        value="Clock In"
+      />
+      <input
+        type="submit"
+        class="rounded b-no bg-warning <%= (btnVisible && clockInOutState) ? '' : 'd-none' %>"
+        value="Clock Out"
+      />
     </form>
-    <hr>
+    <hr />
     <!-- table  -->
     <table class="noBorderTable">
       <tr>
@@ -28,15 +35,21 @@
         <th>Clock Out</th>
         <th>Reason</th>
       </tr>
+      <% if(data.length > 0) { %> <% for(let index = 0; index <
+      data.length;index++){ const dater = new Date();%>
       <tr>
-        <td>date</td>
-        <td>in</td>
-        <td>Reason</td>
-        <td>out</td>
-        <td>Reason</td>
+        <td><%= moment(data[index].in).format('LL') %></td>
+        <td><%= moment(data[index].in).format('LT') %></td>
+        <td><%= data[index].reason_in %></td>
+        <td><%= data[index].out %></td>
+        <td><%= data[index].reason_out %></td>
       </tr>
+      <% } %> <% }else{ %>
+      <tr>
+        <td colspan="5">No Data</td>
+      </tr>
+      <% } %>
     </table>
-
   </div>
 </div>
 
