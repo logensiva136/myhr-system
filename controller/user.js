@@ -35,15 +35,16 @@ exports.getHome = (req, res, next) => {
 exports.getAtt = (req, res, next) => {
   if (req.session.username) {
     userDB.getUserAtt(req.session.username).then((data) => {
-      console.log(data);
+      console.log(currentTime.getHours() > 6);
       res.render("att", {
-        btnVisible: currentTime.getHours() > 6 ? true : false,
-        clockInOutState: data.in,
+        btnVisible: currentTime.getHours() > 6,
+        clockInOutState: data.length > 0,
         role: req.session.role,
         username: req.session.fn,
         data: data,
-        moment:moment
+        moment: moment
       });
+      // res.redirect("/")
     });
   } else {
     res.redirect("/401");
@@ -51,13 +52,10 @@ exports.getAtt = (req, res, next) => {
 };
 
 exports.postAtt = (req, res, next) => {
-  userDB
-    .getUserAtt(req.session.username)
-    .then((data) => {
-      userDB.postClockIn(req.session.username, req.session.rowId, "");
-      res.redirect(req.originalUrl);
-    })
-    .catch((err) => console.log(err));
+
+  userDB.postClockIn(req.session.username, req.session.rowId, null).then(data => {
+    data ? res.redirect("/att") : res.redirect("/")
+  }).catch(err => console.log(err))
 };
 
 exports.postLogin = (req, res, next) => {

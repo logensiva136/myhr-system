@@ -36,12 +36,12 @@
         <th>Reason</th>
       </tr>
       <% if(data.length > 0) { %> <% for(let index = 0; index <
-      data.length;index++){ const dater = new Date();%>
+      data.length;index++){ %>
       <tr>
-        <td><%= moment(data[index].in).format('LL') %></td>
+        <td><%= moment(data[index].in).format('L') %></td>
         <td><%= moment(data[index].in).format('LT') %></td>
         <td><%= data[index].reason_in %></td>
-        <td><%= data[index].out %></td>
+        <td><%= moment(data[index].out).format('LT') %></td>
         <td><%= data[index].reason_out %></td>
       </tr>
       <% } %> <% }else{ %>

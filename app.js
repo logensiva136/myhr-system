@@ -7,7 +7,7 @@ const path = require("path");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
-require("events").EventEmitter.defaultMaxListeners = 100;
+require("events").EventEmitter.defaultMaxListeners = 1000;
 
 const app = express();
 
@@ -23,7 +23,7 @@ app.use(
   })
 );
 
-app.set("view engine", "ejs",{async: true});
+app.set("view engine", "ejs", { async: true });
 app.set("views", "views");
 app.use(express.static(path.join(__dirname, "views", "public")));
 

@@ -44,7 +44,7 @@ exports.postNewUser = (
 
   api({
     method: "post",
-    url: "https://api.baserow.io/api/database/rows/table/47848/?user_field_names=true",
+    url: "database/rows/table/47848/?user_field_names=true",
     data: {
       idnum: idn,
       username: uname,
@@ -65,7 +65,7 @@ exports.postNewUser = (
 exports.patchUserPassword = (row_id, password) => {
   return api({
     method: "patch",
-    url: `https://api.baserow.io/api/database/rows/table/47848/${row_id}/?user_field_names=true`,
+    url: `database/rows/table/47848/${row_id}/?user_field_names=true`,
     data: {
       password: password,
       ftl: false,
@@ -78,7 +78,7 @@ exports.patchUserPassword = (row_id, password) => {
 exports.getUserAtt = (username) => {
   return api({
     method: "GET",
-    url: `https://api.baserow.io/api/database/rows/table/47850/?user_field_names=true`,
+    url: `database/rows/table/47850/?user_field_names=true`,
   })
     .then((data) => {
       return data.data.results;
@@ -91,7 +91,7 @@ exports.postClockIn = (username, id, reason_in) => {
   if (reason_in) {
     return api({
       method: "POST",
-      url: "https://api.baserow.io/api/database/rows/table/47850/?user_field_names=true",
+      url: "database/rows/table/47850/?user_field_names=true",
       data: {
         username: username,
         userId: [id],
@@ -104,7 +104,7 @@ exports.postClockIn = (username, id, reason_in) => {
   } else {
     return api({
       method: "POST",
-      url: "https://api.baserow.io/api/database/rows/table/47850/?user_field_names=true",
+      url: "database/rows/table/47850/?user_field_names=true",
       data: {
         username: username,
         userId: [id],
@@ -116,3 +116,16 @@ exports.postClockIn = (username, id, reason_in) => {
     });
   }
 };
+
+exports.getClockInOutByUser = (username) => {
+  return api({
+    method: "post",
+    url: "database/rows/table/47850/filters",
+    "field": "username",
+    "type": "equal",
+    "value": username
+  })
+    .then((data) => data.data.results)
+    .catch((err) => console.log(err));
+
+} 
