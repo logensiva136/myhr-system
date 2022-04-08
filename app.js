@@ -34,7 +34,6 @@ app.use(
 );
 
 const userRouter = require("./routes/user");
-
 app.use("/", userRouter);
 
 app.use((req, res) => {

@@ -26,7 +26,7 @@
         <form action="/eclaim" method="post" class="form-custom text-center">
             <div>
                 <p>Date : <%= ecDt %></p>
-                <select class="ms-2" style="border-radius: 5px;" name="typeOfClaim" id="">
+                <select class="ms-2 form-custom style="border-radius: 5px;" name="typeOfClaim" id="" required>
                     <option value="none">-- Claim Type --</option>
                     <option value="travel">Travel Claim</option>
                     <option value="petrol">Petrol Claim</option>
@@ -36,10 +36,10 @@
                     <option value="entertainment">Entertainment Claim</option>
                 </select>
             </div>
-            <input type="text" name="" id="" placeholder="Bill / Invoice No.">
-            <textarea name="" placeholder="Justification"></textarea>
+            <input type="text" name="" id="" placeholder="Bill / Invoice No. / Ref. No." required>
+            <textarea name="" placeholder="Justification" required></textarea>
             <p>Upload Receipt:</p>
-            <input type="file" name="" id="" placeholder="">
+            <input type="file" name="" id="" placeholder="" accept="image/png, image/gif, image/jpeg,application/pdf">
             <button type="submit" class="btn btn-primary">Submit Claim</button>
         </form>
     </div>

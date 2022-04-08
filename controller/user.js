@@ -28,34 +28,38 @@ exports.getHome = (req, res, next) => {
       }
     }
   } else {
-    res.redirect("/401");
+    res.redirect("/login");
   }
 };
 
 exports.getAtt = (req, res, next) => {
   if (req.session.username) {
-    userDB.getUserAtt(req.session.username).then((data) => {
-      console.log(currentTime.getHours() > 6);
+    userDB.getClockInOutByUser(req.session.username).then((data) => {
+      const state = data.length > 0 ? data[data.length - 1].out !== null : true;
+      console.log(state);
       res.render("att", {
         btnVisible: currentTime.getHours() > 6,
-        clockInOutState: data.length > 0,
+
+        clockInOutState: state,
         role: req.session.role,
         username: req.session.fn,
         data: data,
         moment: moment
       });
-      // res.redirect("/")
     });
   } else {
+    req.session.currentDir = req.originalUrl;
     res.redirect("/401");
   }
 };
 
 exports.postAtt = (req, res, next) => {
 
-  userDB.postClockIn(req.session.username, req.session.rowId, null).then(data => {
-    data ? res.redirect("/att") : res.redirect("/")
-  }).catch(err => console.log(err))
+  req.body.status === "in" ? userDB.postClockIn(req.session.username, req.session.rowId, null).then(data => {
+    res.redirect("/att");
+  }).catch(err => console.log(err)) : userDB.postClockOut(req.session.username, null).then((data) => {
+    res.redirect("/att");
+  });
 };
 
 exports.postLogin = (req, res, next) => {

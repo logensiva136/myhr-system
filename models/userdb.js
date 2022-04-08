@@ -75,16 +75,15 @@ exports.patchUserPassword = (row_id, password) => {
     .catch((err) => console.log(err));
 };
 
-exports.getUserAtt = (username) => {
+exports.getClockInOutByUser = (username) => {
   return api({
     method: "GET",
-    url: `database/rows/table/47850/?user_field_names=true`,
+    url: "database/rows/table/47850/?user_field_names=true"
   })
-    .then((data) => {
-      return data.data.results;
-    })
+    .then((data) => data.data.results.filter(atts => atts.username === username))
     .catch((err) => console.log(err));
-};
+
+}
 
 exports.postClockIn = (username, id, reason_in) => {
   const now = new Date();
@@ -117,15 +116,35 @@ exports.postClockIn = (username, id, reason_in) => {
   }
 };
 
-exports.getClockInOutByUser = (username) => {
+exports.postClockOut = (username, reason_out) => {
+  const now = new Date();
   return api({
-    method: "post",
-    url: "database/rows/table/47850/filters",
-    "field": "username",
-    "type": "equal",
-    "value": username
+    method: "GET",
+    url: "database/rows/table/47850/?user_field_names=true"
   })
-    .then((data) => data.data.results)
+    .then((data) => {
+      const filteredData = data.data.results.filter(val => val.username === username)
+      if (reason_out) {
+        return api({
+          method: "patch",
+          url: `https://api.baserow.io/api/database/rows/table/47850/${filteredData[filteredData.length - 1].id}/?user_field_names=true`,
+          data: {
+            out: now.toISOString(),
+            reason_out: reason_out
+          }
+        })
+      } else {
+        return api({
+          method: "patch",
+          url: `https://api.baserow.io/api/database/rows/table/47850/${filteredData[filteredData.length - 1].id}/?user_field_names=true`,
+          data: {
+            out: now.toISOString(),
+            reason_out: ""
+          }
+        });
+      }
+    })
     .catch((err) => console.log(err));
 
-} 
+
+};

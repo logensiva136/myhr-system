@@ -14,17 +14,14 @@
   <div>
     <!-- submit btn -->
     <form method="post" action="/att" class="">
-      <input
+      <button
         type="submit"
-        class="rounded b-no bg-warning <%= (btnVisible && !clockInOutState) ? '' : 'd-none' %>"
-        value="Clock In"
-      />
-      <input
-        type="submit"
-        class="rounded b-no bg-warning <%= (btnVisible && clockInOutState) ? '' : 'd-none' %>"
-        value="Clock Out"
-      />
+        class="rounded b-no bg-warning <%= (btnVisible) ? '' : 'd-none' %>"
+        value="<%= clockInOutState ? 'in' : 'out' %>"
+      ><%= clockInOutState ? 'Clock In' : 'Clock Out' %></button>
+      <input type="hidden" name="status" value="<%=  clockInOutState ? 'in' : 'out' %>">
     </form>
+    <% include('includes/popForReason') %> 
     <hr />
     <!-- table  -->
     <table class="noBorderTable">

@@ -166,3 +166,17 @@ input[type=number] {
 }
 
 /* recent container style 👆 */
+
+/* popup for reason 👇 */
+
+.popup{
+  position: absolute;
+    width: 100%;
+    text-align: center;
+}
+
+.popup form{
+  display: inline-block;
+}
+
+/* popup for reason 👆 */
