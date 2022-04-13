@@ -10,8 +10,9 @@ var storage = multer.diskStorage({
   destination: function (req, file, callback) {
     callback(null, 'uploads/');
   },
-  filename: function (req, file, callback) {
-    var id = util.random_string(16) + Date.now() + path.extname(file.originalname);
+  filename: function (req, file, cb) {
+    var dtname = new Date;
+    var id = file.originalname.replace(" ", "_");
     cb(null, id);
   }
 });
