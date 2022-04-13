@@ -5,6 +5,18 @@ const cal = new calendar.Calendar();
 const recentArr = [];
 const currentTime = new Date();
 var moment = require('moment');
+const multer = require('multer');
+var storage = multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, 'uploads/');
+  },
+  filename: function (req, file, callback) {
+    var id = util.random_string(16) + Date.now() + path.extname(file.originalname);
+    cb(null, id);
+  }
+});
+var upload = multer({ storage: storage }).single('attachment');
+const fs = require('fs');
 
 exports.getHome = (req, res, next) => {
   if (req.session.username) {
@@ -257,20 +269,43 @@ exports.getSP = (req, res, next) => {
 };
 
 exports.getClaim = (req, res, next) => {
+  // fs.readdir("uploads/", (err, files) => {
+  //   if (err) {
+  //     console.log(err)
+  //   }
+  //   files.forEach(file => {
+  //     fs.rm("uploads/" + file, { recursive: false }, err => {
+  //       console.log(err);
+  //     });
+
+  //   })
+  // })
   if (req.session.username) {
     res.render("eclaim", {
       role: req.session.role,
       ecDt: new Date().toLocaleDateString(),
       username: req.session.fn,
+      state: false
     });
   } else {
     req.session.currentDir = req.originalUrl;
     res.redirect("/");
   }
+
 };
 
 exports.postClaim = (req, res, next) => {
-  res.send("");
+  if (req.session.username) {
+    upload(req, res, function (err) {
+      if (err) {
+        console.log(err)
+      }
+      userDB.postClaim(req.session.rowId, req.body.typeOfClaim, new Date().toLocaleDateString(), req.body.amount, req.body.justify, req.file.originalname, req.session.username)
+    })
+  } else {
+    req.session.currentDir = req.originalUrl;
+    res.redirect("/");
+  }
 };
 
 exports.getSetting = (req, res, next) => {

@@ -1,54 +1,63 @@
 <!-- head` -->
 <%- include("includes/head") %>
 
-<!-- sidebar -->
-<%- include("includes/sidebar") %>
+  <!-- sidebar -->
+  <%- include("includes/sidebar") %>
 
-<!-- img -->
-<%- include("includes/img") %>
+    <!-- img -->
+    <%- include("includes/img") %>
 
-<!-- content box  -->
-<div id="topPusher" class="text-center">
-  <!-- clock -->
-  <p id="realTimeClock" class="display-4"></p>
-  <div>
-    <!-- submit btn -->
-    <form method="post" action="/att" class="">
-      <button
-        type="submit"
-        class="rounded b-no bg-warning <%= (btnVisible) ? '' : 'd-none' %>"
-        value="<%= clockInOutState ? 'in' : 'out' %>"
-      ><%= clockInOutState ? 'Clock In' : 'Clock Out' %></button>
-      <input type="hidden" name="status" value="<%=  clockInOutState ? 'in' : 'out' %>">
-    </form>
-    <% include('includes/popForReason') %> 
-    <hr />
-    <!-- table  -->
-    <table class="noBorderTable">
-      <tr>
-        <th>Date</th>
-        <th>Clock In</th>
-        <th>Reason</th>
-        <th>Clock Out</th>
-        <th>Reason</th>
-      </tr>
-      <% if(data.length > 0) { %> <% for(let index = 0; index <
-      data.length;index++){ %>
-      <tr>
-        <td><%= moment(data[index].in).format('L') %></td>
-        <td><%= moment(data[index].in).format('LT') %></td>
-        <td><%= data[index].reason_in %></td>
-        <td><%= moment(data[index].out).format('LT') %></td>
-        <td><%= data[index].reason_out %></td>
-      </tr>
-      <% } %> <% }else{ %>
-      <tr>
-        <td colspan="5">No Data</td>
-      </tr>
-      <% } %>
-    </table>
-  </div>
-</div>
+      <!-- content box  -->
+      <div id="topPusher" class="text-center">
+        <!-- clock -->
+        <p id="realTimeClock" class="display-4"></p>
+        <div>
+          <!-- submit btn -->
+          <form method="post" action="/att" class="">
+            <button type="submit" class="rounded b-no bg-warning <%= (btnVisible) ? '' : 'd-none' %>"
+              value="<%= clockInOutState ? 'in' : 'out' %>">
+              <%= clockInOutState ? 'Clock In' : 'Clock Out' %>
+            </button>
+            <input type="hidden" name="status" value="<%=  clockInOutState ? 'in' : 'out' %>">
+          </form>
+          <% include('includes/popForReason') %>
+            <hr />
+            <!-- table  -->
+            <table class="noBorderTable">
+              <tr>
+                <th>Date</th>
+                <th>Clock In</th>
+                <th>Reason</th>
+                <th>Clock Out</th>
+                <th>Reason</th>
+              </tr>
+              <% if(data.length> 0) { %> <% for(let index=0; index < data.length;index++){ %>
+                  <tr>
+                    <td>
+                      <%= moment(data[index].in).format('L') %>
+                    </td>
+                    <td>
+                      <%= moment(data[index].in).format('LT') %>
+                    </td>
+                    <td>
+                      <%= data[index].reason_in %>
+                    </td>
+                    <td>
+                      <%= moment(data[index].out).format('LT') %>
+                    </td>
+                    <td>
+                      <%= data[index].reason_out %>
+                    </td>
+                  </tr>
+                  <% } %>
+                    <% }else{ %>
+                      <tr>
+                        <td colspan="5">No Data</td>
+                      </tr>
+                      <% } %>
+            </table>
+        </div>
+      </div>
 
-<!-- foot -->
-<%- include("includes/foot") %>
+      <!-- foot -->
+      <%- include("includes/foot") %>

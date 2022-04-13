@@ -1,6 +1,8 @@
 const express = require("express");
 const userController = require("../controller/user");
 const route = express.Router();
+// const multer = require('multer');
+// const upload = multer({ dest: 'uploads/' })
 
 route.get("/att", userController.getAtt);
 route.post("/att", userController.postAtt);

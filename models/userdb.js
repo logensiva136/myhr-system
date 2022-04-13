@@ -127,7 +127,7 @@ exports.postClockOut = (username, reason_out) => {
       if (reason_out) {
         return api({
           method: "patch",
-          url: `https://api.baserow.io/api/database/rows/table/47850/${filteredData[filteredData.length - 1].id}/?user_field_names=true`,
+          url: `database/rows/table/47850/${filteredData[filteredData.length - 1].id}/?user_field_names=true`,
           data: {
             out: now.toISOString(),
             reason_out: reason_out
@@ -136,7 +136,7 @@ exports.postClockOut = (username, reason_out) => {
       } else {
         return api({
           method: "patch",
-          url: `https://api.baserow.io/api/database/rows/table/47850/${filteredData[filteredData.length - 1].id}/?user_field_names=true`,
+          url: `database/rows/table/47850/${filteredData[filteredData.length - 1].id}/?user_field_names=true`,
           data: {
             out: now.toISOString(),
             reason_out: ""
@@ -145,6 +145,23 @@ exports.postClockOut = (username, reason_out) => {
       }
     })
     .catch((err) => console.log(err));
-
-
 };
+
+exports.postClaim = (userid, typeofclaim, dates, amounts, justify, attachment, tagging) => {
+  const idn = Math.floor(1000 + Math.random() * 9000);
+  return api({
+    method: "POST",
+    url: "database/rows/table/47872/?user_field_names=true",
+    data: {
+      claim_id: idn,
+      userId: userid,
+      date: dates,
+      amount: amounts,
+      justification: justify,
+      attachment: [{ "name": attachment }],
+      status: "pending",
+      toc: typeofclaim,
+      tag: tagging,
+    }
+  }).catch(err => console.error(err))
+}
