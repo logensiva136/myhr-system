@@ -309,6 +309,7 @@ exports.postClaim = (req, res, next) => {
   }
 };
 
+
 exports.getSetting = (req, res, next) => {
   if (req.session.username) {
     res.render("setting", {
