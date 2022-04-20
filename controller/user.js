@@ -49,7 +49,7 @@ exports.getHome = (req, res, next) => {
 
 exports.getAtt = (req, res, next) => {
   if (req.session.username) {
-    userDB.getClockInOutByUser(req.session.username).then((data) => {
+    userDB.getClockInOutByUser(req.session.username, (data) => {
       const state = data.length > 0 ? data[data.length - 1].out !== null : true;
       console.log(state);
       res.render("att", {
@@ -79,8 +79,7 @@ exports.postAtt = (req, res, next) => {
 
 exports.postLogin = (req, res, next) => {
   userDB
-    .getDetailsByUsername(req.body.username)
-    .then((data) => {
+    .getDetailsByUsername(req.body.username, (data) => {
       if (data < 1) {
         res.render("login", {
           error: "user",
@@ -103,7 +102,6 @@ exports.postLogin = (req, res, next) => {
         res.redirect("/");
       }
     })
-    .catch((err) => console.error(err));
 };
 
 exports.getLogin = (req, res, next) => {
@@ -123,9 +121,10 @@ exports.getCP = (req, res, next) => {
 
 exports.postCP = (req, res, next) => {
   if (req.body.password) {
-    userDB.patchUserPassword(req.session.rowId, req.body.password);
-    req.session.ftl = false;
-    res.redirect("/");
+    userDB.patchUserPassword(req.session.rowId, req.body.password, () => {
+      req.session.ftl = false;
+      res.redirect("/");
+    });
   } else {
     res.redirect("/cp");
   }
@@ -195,8 +194,7 @@ exports.postAddUser = (req, res, next) => {
   }
 
   userDB
-    .getDetailsByUsername(req.body.username)
-    .then((uchecker) => {
+    .getDetailsByUsername(req.body.username, (uchecker) => {
       if (!(uchecker.length > 0) && achecker) {
         userDB.postNewUser(
           req.body.fname,
@@ -336,6 +334,7 @@ exports.postSetting = (req, res, next) => {
 exports.getPay = (req, res, next) => {
   if (req.session.username) {
     res.render("payroll", { username: req.session.fn, role: req.session.role })
+    userDB.getPayroll((data) => { console.log(data) })
   } else {
     req.session.currentDir = req.originalUrl;
     res.redirect("/");
