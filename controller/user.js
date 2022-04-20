@@ -334,7 +334,7 @@ exports.postSetting = (req, res, next) => {
 exports.getPay = (req, res, next) => {
   if (req.session.username) {
     res.render("payroll", { username: req.session.fn, role: req.session.role })
-    userDB.getPayroll((data) => { console.log(data) })
+    userDB.getPayroll((data) => { console.log(data[0].user) })
   } else {
     req.session.currentDir = req.originalUrl;
     res.redirect("/");
