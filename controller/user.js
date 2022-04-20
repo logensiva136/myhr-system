@@ -4,6 +4,7 @@ const session = require("express-session");
 const cal = new calendar.Calendar();
 const recentArr = [];
 const currentTime = new Date();
+const { v4: uuidv4 } = require('uuid');
 var moment = require('moment');
 const multer = require('multer');
 var storage = multer.diskStorage({
@@ -11,8 +12,8 @@ var storage = multer.diskStorage({
     callback(null, 'uploads/');
   },
   filename: function (req, file, cb) {
-    var dtname = new Date;
-    var id = file.originalname.replace(" ", "_");
+    let fn = file.originalname.split(".");
+    var id = uuidv4() + "." + fn[fn.length - 1];
     cb(null, id);
   }
 });
@@ -38,6 +39,7 @@ exports.getHome = (req, res, next) => {
           username: req.session.fn,
           role: req.session.role,
         });
+
       }
     }
   } else {
@@ -301,7 +303,8 @@ exports.postClaim = (req, res, next) => {
       if (err) {
         console.log(err)
       }
-      userDB.postClaim(req.session.rowId, req.body.typeOfClaim, new Date().toLocaleDateString(), req.body.amount, req.body.justify, req.file.originalname, req.session.username)
+      console.log(req.file)
+      userDB.postClaim(req.session.rowId, req.body.typeOfClaim, req.body.amount, req.body.justify, req.file.path, req.session.username)
     })
   } else {
     req.session.currentDir = req.originalUrl;
@@ -330,6 +333,14 @@ exports.postSetting = (req, res, next) => {
   });
 };
 
+exports.getPay = (req, res, next) => {
+  if (req.session.username) {
+    res.render("payroll", { username: req.session.fn, role: req.session.role })
+  } else {
+    req.session.currentDir = req.originalUrl;
+    res.redirect("/");
+  }
+}
 exports.au = (req, res) => {
   res.render("401");
 };

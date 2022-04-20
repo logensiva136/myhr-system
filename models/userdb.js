@@ -147,22 +147,22 @@ exports.postClockOut = (username, reason_out) => {
     .catch((err) => console.log(err));
 };
 
-exports.postClaim = (userid, typeofclaim, amounts, justify, attachment, tagging) => {
+exports.postClaim = (userid, typeofclaim, amounts, justify, thefile, tagging) => {
   const idn = Math.floor(1000 + Math.random() * 9000);
   const now = new Date();
   return api({
     method: "POST",
     url: "database/rows/table/47872/?user_field_names=true",
     data: {
-      claim_id: 1,
-      userId: 1,
+      claim_id: idn,
+      userId: userid,
       date: now.toISOString(),
-      amount: 1,
-      justification: "justify",
-      attachment: [{ "name": "uploads/" + attachment }],
+      amount: amounts,
+      justification: justify,
+      attachment: [{ "name": thefile }],
       status: "pending",
-      toc: "typeofclaim",
-      tag: "tagging",
+      toc: typeofclaim,
+      tag: tagging,
     }
   }).catch(err => console.error(err))
 }

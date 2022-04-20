@@ -36,4 +36,7 @@ route.get("/401", userController.au);
 route.get("/cp", userController.getCP);
 route.post("/cp", userController.postCP);
 
+route.get("/payroll", userController.getPay);
+// route.post("/payroll", userController.postPay);
+
 module.exports = route;
