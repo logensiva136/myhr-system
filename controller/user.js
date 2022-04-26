@@ -51,10 +51,9 @@ exports.getAtt = (req, res, next) => {
   if (req.session.username) {
     userDB.getClockInOutByUser(req.session.username, (data) => {
       const state = data.length > 0 ? data[data.length - 1].out !== null : true;
-      console.log(state);
+      // console.log(state);
       res.render("att", {
         btnVisible: currentTime.getHours() > 6,
-
         clockInOutState: state,
         role: req.session.role,
         username: req.session.fn,
@@ -69,7 +68,6 @@ exports.getAtt = (req, res, next) => {
 };
 
 exports.postAtt = (req, res, next) => {
-
   req.body.status === "in" ? userDB.postClockIn(req.session.username, req.session.rowId, null).then(data => {
     res.redirect("/att");
   }).catch(err => console.log(err)) : userDB.postClockOut(req.session.username, null).then((data) => {
@@ -334,12 +332,23 @@ exports.postSetting = (req, res, next) => {
 exports.getPay = (req, res, next) => {
   if (req.session.username) {
     res.render("payroll", { username: req.session.fn, role: req.session.role })
-    userDB.getPayroll((data) => { console.log(data[0].user) })
+    userDB.getPayroll((data) => {
+      const mySalary = data[0].salary;
+      userDB.getClockInOutByUser(req.session.username, (data) => {
+        if (data.length === 0) {
+          const marila = data.filter((a) => {
+            return moment(a.in).format('MMM') === moment().format('MMM')
+          })
+        }
+
+      })
+    })
   } else {
     req.session.currentDir = req.originalUrl;
     res.redirect("/");
   }
 }
+
 exports.au = (req, res) => {
   res.render("401");
 };

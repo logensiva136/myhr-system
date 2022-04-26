@@ -11,37 +11,43 @@
                 <table class="noBorderTable">
                     <tr>
                         <td>Month</td>
-                        <td>Salary</td>
+                        <td>Base Salary</td>
                         <td>Over Time</td>
                         <td>Unpaid Leave(s)</td>
+                        <td>Total</td>
                         <td>Attachment</td>
                     </tr>
                     <tr>
                         <td>Month</td>
-                        <td>Salary</td>
+                        <td>Base Salary</td>
                         <td>Over Time</td>
                         <td>Unpaid Leave(s)</td>
+                        <td>Total</td>
                         <td>Attachment</td>
                     </tr>
                 </table>
             </div>
-            <div class="text-center">
-                <h4 class="text-center">User's Salary</h4>
-                <table class="noBorderTable">
-                    <tr>
-                        <td>Month</td>
-                        <td>Salary</td>
-                        <td>Over Time</td>
-                        <td>Unpaid Leave(s)</td>
-                        <td>Attachment</td>
-                    </tr>
-                    <tr>
-                        <td>Month</td>
-                        <td>Salary</td>
-                        <td>Over Time</td>
-                        <td>Unpaid Leave(s)</td>
-                        <td>Attachment</td>
-                    </tr>
-                </table>
-            </div>
-            <%- include("includes/foot") %>
+            <% if(role==="admin" ) {%>
+                <div class="text-center">
+                    <h4 class="text-center">User's Salary</h4>
+                    <table class="noBorderTable">
+                        <tr>
+                            <td>Month</td>
+                            <td>Base Salary</td>
+                            <td>Over Time</td>
+                            <td>Unpaid Leave(s)</td>
+                            <td>Total</td>
+                            <td>Attachment</td>
+                        </tr>
+                        <tr>
+                            <td>Month</td>
+                            <td>Base Salary</td>
+                            <td>Over Time</td>
+                            <td>Unpaid Leave(s)</td>
+                            <td>Total</td>
+                            <td>Attachment</td>
+                        </tr>
+                    </table>
+                </div>
+                <% } %>
+                    <%- include("includes/foot") %>

@@ -10,7 +10,7 @@
       <!-- content box  -->
       <div id="topPusher" class="text-center">
         <!-- clock -->
-        <p id="realTimeClock" class="display-4"></p>
+        <p name="realTimeClock" id="realTimeClock" class="display-4"></p>
         <div>
           <!-- submit btn -->
           <form method="post" action="/att" class="">
@@ -18,7 +18,8 @@
               value="<%= clockInOutState ? 'in' : 'out' %>">
               <%= clockInOutState ? 'Clock In' : 'Clock Out' %>
             </button>
-            <input type="hidden" name="status" value="<%=  clockInOutState ? 'in' : 'out' %>">
+            <input type="hidden" name="theTime" id="theTime" />
+            <input type="hidden" name="status" value="<%=  clockInOutState ? 'in' : 'out' %>" />
           </form>
           <% include('includes/popForReason') %>
             <hr />
@@ -34,7 +35,7 @@
               <% if(data.length> 0) { %> <% for(let index=0; index < data.length;index++){ %>
                   <tr>
                     <td>
-                      <%= moment(data[index].in).format('L') %>
+                      <%= moment(data[index].in).format('ll') %>
                     </td>
                     <td>
                       <%= moment(data[index].in).format('LT') %>

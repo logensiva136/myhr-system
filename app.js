@@ -8,6 +8,7 @@ const session = require("express-session");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
 require("events").EventEmitter.defaultMaxListeners = 1000;
+const moment = require("moment");
 
 const app = express();
 
@@ -32,9 +33,12 @@ app.use(
     extended: true,
   })
 );
+// console.log(moment().toISOString())
 
 const userRouter = require("./routes/user");
+const req = require("express/lib/request");
 app.use("/", userRouter);
+
 
 app.use((req, res) => {
   res.render("404");

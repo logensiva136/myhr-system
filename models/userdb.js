@@ -1,4 +1,5 @@
 const axios = require("axios");
+const moment = require("moment");
 
 const api = axios.create({
   baseURL: "https://api.baserow.io/api/",
@@ -85,8 +86,7 @@ exports.getClockInOutByUser = (username, cb) => {
 
 }
 
-exports.postClockIn = (username, id, reason_in) => {
-  const now = new Date();
+exports.postClockIn = (username, id, theTime, reason_in) => {
   if (reason_in) {
     return api({
       method: "POST",
@@ -94,7 +94,7 @@ exports.postClockIn = (username, id, reason_in) => {
       data: {
         username: username,
         userId: [id],
-        in: now.today,
+        in: moment(),
         out: null,
         reason_in: reason_in,
         reason_out: "",
@@ -107,7 +107,7 @@ exports.postClockIn = (username, id, reason_in) => {
       data: {
         username: username,
         userId: [id],
-        in: now.toISOString(),
+        in: moment(),
         out: null,
         reason_in: "",
         reason_out: "",
@@ -129,7 +129,7 @@ exports.postClockOut = (username, reason_out) => {
           method: "patch",
           url: `database/rows/table/47850/${filteredData[filteredData.length - 1].id}/?user_field_names=true`,
           data: {
-            out: now.toISOString(),
+            out: moment(),
             reason_out: reason_out
           }
         })
@@ -138,7 +138,7 @@ exports.postClockOut = (username, reason_out) => {
           method: "patch",
           url: `database/rows/table/47850/${filteredData[filteredData.length - 1].id}/?user_field_names=true`,
           data: {
-            out: now.toISOString(),
+            out: moment(),
             reason_out: ""
           }
         });
