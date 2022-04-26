@@ -118,6 +118,8 @@ exports.getCP = (req, res, next) => {
 };
 
 exports.postCP = (req, res, next) => {
+  console.log(req.session.rowId);
+
   if (req.body.password) {
     userDB.patchUserPassword(req.session.rowId, req.body.password, () => {
       req.session.ftl = false;
@@ -212,7 +214,6 @@ exports.postAddUser = (req, res, next) => {
         error: "username",
       });
     })
-    .catch((err) => console.log(err));
 };
 
 exports.getLogout = (req, res, next) => {
@@ -331,14 +332,26 @@ exports.postSetting = (req, res, next) => {
 
 exports.getPay = (req, res, next) => {
   if (req.session.username) {
-    res.render("payroll", { username: req.session.fn, role: req.session.role })
     userDB.getPayroll((data) => {
       const mySalary = data[0].salary;
       userDB.getClockInOutByUser(req.session.username, (data) => {
-        if (data.length === 0) {
-          const marila = data.filter((a) => {
-            return moment(a.in).format('MMM') === moment().format('MMM')
-          })
+        let users = [];
+        userDB.listUsers((data) => {
+          // console.log(data)
+          users = [data]
+        })
+        console.log(users);
+        if (data.length !== 0) {
+          // const marila = data.filter((a) => {
+          //   return moment(a.in).format('MMM') === moment().format('MMM')
+          // })
+
+          const years = [...new Set(data.map(e => new Date(e.in).getFullYear()))]
+          const months = [...new Set(data.map(e => new Date(e.in).getMonth()))]
+          console.log(months)
+
+          res.render("payroll", { username: req.session.fn, role: req.session.role, years: years, months: months })
+
         }
 
       })

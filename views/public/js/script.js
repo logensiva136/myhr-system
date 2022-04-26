@@ -11,7 +11,7 @@ function getTime() {
   secs = ("0" + secs).slice(-2);
   $("#realTimeClock").text(hrs + ":" + mins + ":" + secs);
   // $("#realTimeClock").text(moment().format('LTS'));
-  $('#theTime').val(newTime.toISOString());
+  // $('#theTime').val(newTime.toISOString());
 }
 setInterval(getTime, 900);
 
@@ -33,3 +33,9 @@ $('#reason').click(function () {
     alert("logen")
   }
 })
+
+function latechecker(e) {
+  e.preventDefault();
+  console.log(moment().toLocaleString())
+
+}

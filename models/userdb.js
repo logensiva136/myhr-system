@@ -17,6 +17,12 @@ const allUserData = (cb) => {
     .catch((err) => console.log(err));
 };
 
+exports.listUsers = (cb) => {
+  allUserData(data => {
+    cb(data)
+  });
+}
+
 exports.getDetailsByUsername = (username, cb) => {
   allUserData(data => {
     cb(data.filter((res) => res.username === username))
@@ -72,7 +78,7 @@ exports.patchUserPassword = (row_id, password, cb) => {
       ftl: false,
     },
   })
-    .then(cb(data))
+    .then(data => cb(data))
     .catch((err) => console.log(err));
 };
 
@@ -173,3 +179,4 @@ exports.getPayroll = (cb) => {
     url: "database/rows/table/47849/?user_field_names=true",
   }).then(data => { cb(data.data.results) }).catch(err => console.log(err))
 }
+

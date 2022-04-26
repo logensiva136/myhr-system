@@ -17,19 +17,29 @@
                         <td>Total</td>
                         <td>Attachment</td>
                     </tr>
-                    <tr>
-                        <td>Month</td>
-                        <td>Base Salary</td>
-                        <td>Over Time</td>
-                        <td>Unpaid Leave(s)</td>
-                        <td>Total</td>
-                        <td>Attachment</td>
-                    </tr>
+                    <% months.map(m=>{ %>
+                        <tr>
+                            <td>
+                                <%= m %>
+                            </td>
+                            <td>Base Salary</td>
+                            <td>Over Time</td>
+                            <td>Unpaid Leave(s)</td>
+                            <td>Total</td>
+                            <td>Attachment</td>
+                        </tr>
+                        <% }) %>
                 </table>
             </div>
             <% if(role==="admin" ) {%>
                 <div class="text-center">
                     <h4 class="text-center">User's Salary</h4>
+                    <select name="" id="">
+                        <option value="">a</option>
+                        <option value="">a</option>
+                        <option value="">a</option>
+                        <option value="">a</option>
+                    </select>
                     <table class="noBorderTable">
                         <tr>
                             <td>Month</td>
