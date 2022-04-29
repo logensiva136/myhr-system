@@ -194,6 +194,19 @@ exports.getClaim = () => {
   // const filterClaims = allClaims.filter(data => data.username === uname)
   // // console.log(filterClaims[0])
 }
+exports.getClaimByUser = (uname) => {
+  return api({ method: "GET", url: `https://api.baserow.io/api/database/rows/table/47872/?user_field_names=true` }).
+    then(data => {
+      return data.data.results.filter(data => {
+        return data.username === uname
+      })
+    }).catch(err => {
+      console.log(err)
+    })
+  // // console.log(allClaims)
+  // const filterClaims = allClaims.filter(data => data.username === uname)
+  // // console.log(filterClaims[0])
+}
 
 exports.getPayroll = () => {
   return api({

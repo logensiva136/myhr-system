@@ -286,37 +286,70 @@ exports.getSP = (req, res, next) => {
 
 exports.getClaim = async (req, res, next) => {
   if (req.session.username) {
-    const claimData = await userDB.getClaim(req.session.username);
-    let totalRM = 0;
-    i = 0;
-    const approvedClaims =
-      claimData < 1
-        ? 0
-        : claimData.filter((data) => data.status === "approved");
-    const pendingClaims =
-      claimData < 1 ? 0 : claimData.filter((data) => data.status === "pending");
-    const rejectedClaims =
-      claimData < 1
-        ? 0
-        : claimData.filter((data) => data.status === "rejected");
-    while (i < approvedClaims.length) {
-      totalRM = totalRM + +approvedClaims[i].amount;
-      i++;
-      [0];
+    if (req.session.role === "user") {
+      const claimData = await userDB.getClaimByUser(req.session.username);
+      let totalRM = 0;
+      i = 0;
+      const approvedClaims =
+        claimData < 1
+          ? 0
+          : claimData.filter((data) => data.status === "approved");
+      const pendingClaims =
+        claimData < 1 ? 0 : claimData.filter((data) => data.status === "pending");
+      const rejectedClaims =
+        claimData < 1
+          ? 0
+          : claimData.filter((data) => data.status === "rejected");
+      while (i < approvedClaims.length) {
+        totalRM = totalRM + +approvedClaims[i].amount;
+        i++;
+      }
+      console.log(claimData)
+      // const getAmounts = claimData.map(data => data.amount)
+      // console.log(getAmounts)
+      res.render("eclaim", {
+        role: req.session.role,
+        ecDt: new Date().toLocaleDateString(),
+        username: req.session.fn,
+        state: false,
+        ap: approvedClaims !== 0 ? approvedClaims.length : 0,
+        pn: approvedClaims !== 0 ? pendingClaims.length : 0,
+        rj: rejectedClaims !== 0 ? rejectedClaims.length : 0,
+        total: totalRM,
+        all: claimData,
+      });
+    } else {
+      const claimData = await userDB.getClaim(req.session.username);
+      let totalRM = 0;
+      i = 0;
+      const approvedClaims =
+        claimData < 1
+          ? 0
+          : claimData.filter((data) => data.status === "approved");
+      const pendingClaims =
+        claimData < 1 ? 0 : claimData.filter((data) => data.status === "pending");
+      const rejectedClaims =
+        claimData < 1
+          ? 0
+          : claimData.filter((data) => data.status === "rejected");
+      while (i < approvedClaims.length) {
+        totalRM = totalRM + +approvedClaims[i].amount;
+        i++;
+      }
+      console.log(claimData)
+      res.render("eclaim", {
+        role: req.session.role,
+        ecDt: new Date().toLocaleDateString(),
+        username: req.session.fn,
+        state: false,
+        ap: approvedClaims !== 0 ? approvedClaims.length : 0,
+        pn: approvedClaims !== 0 ? pendingClaims.length : 0,
+        rj: rejectedClaims !== 0 ? rejectedClaims.length : 0,
+        total: totalRM,
+        all: claimData,
+        moment: moment
+      });
     }
-    // const getAmounts = claimData.map(data => data.amount)
-    // console.log(getAmounts)
-    res.render("eclaim", {
-      role: req.session.role,
-      ecDt: new Date().toLocaleDateString(),
-      username: req.session.fn,
-      state: false,
-      ap: approvedClaims !== 0 ? approvedClaims.length : 0,
-      pn: approvedClaims !== 0 ? pendingClaims.length : 0,
-      rj: rejectedClaims !== 0 ? rejectedClaims.length : 0,
-      total: totalRM,
-      all: claimData,
-    });
   } else {
     req.session.currentDir = req.originalUrl;
     res.redirect("/");
@@ -383,7 +416,7 @@ exports.getPay = async (req, res, next) => {
       (data) => data.user[0].id === req.session.rowId
     );
     mySalary = JSON.parse(mySalary[0].salary).salary;
-
+    // console.log(mySalary)
     const years = [
       ...new Set(allCICO.map((e) => new Date(e.in).getFullYear())),
     ];
@@ -440,13 +473,16 @@ exports.getPay = async (req, res, next) => {
     //returning an array
     const salaryPerDay = dim.map(data => { return mySalary / data })
 
-
     //checking additional pays
-    allClaim.filter(data => {
-      console.log(data.status === "approved")
+    const allApprovedClaims = allClaim.filter(data => {
+      data.status === "pending"
     })
 
-    console.log()
+    const thisMonthClaims = allApprovedClaims.filter(data => {
+      data === data
+
+    })
+    console.log(thisMonthClaims)
 
     res.render("payroll", {
       username: req.session.username,
