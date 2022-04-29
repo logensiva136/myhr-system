@@ -1,26 +1,30 @@
 <%- include("includes/head") %>
-<div class="h-100 bg-dark text-center" style="padding: 70px;">
-    <p class="display-4" style="color:white">
-        <bold>MyHR System</bold>
-    </p>
-    <p class="display-6" style="color:white">
-        <bold>Create New Password</bold>
-    </p>
-    <div style="width: fit-content; padding: 10px; margin:auto; " class="bg-white rounded">
-        <img src="https://us.123rf.com/450wm/tuktukdesign/tuktukdesign1608/tuktukdesign160800043/61010830-user-icon-man-profile-businessman-avatar-person-glyph-vector-illustration.jpg?ver=6"
-            alt="" style="width: 50px; bottom:100">
-        <form action="/cp" method="post" class="pt-2 pb-2">
-            <div class="mb-2 pt-1 pb-1 pe-2 ps-2 rounded"
-                style="background-color: #495371;width: fit-content; height: 60px; margin:auto">
-                <input type="password" placeholder="New Password" name="username"
-                    style="outline:nane;height:50px; margin:0;">
-            </div>
-            <div class=" mb-2 pt-1 pb-1 pe-2 ps-2 rounded"
-                style="background-color: #495371;width: fit-content; height: 60px; margin:auto">
-                <input type="password" name="password" placeholder="Retype New Password"
-                    style="outline:nane;height:50px; margin:0;">
-            </div>
-            <button class="m-1 btn btn-outline-success" type="submit">Change Password</button>
-        </form>
+    <div class="h-100 bg-dark text-center" style="padding: 70px;">
+        <p class="display-4" style="color:white">
+            <bold>MyHR System</bold>
+        </p>
+        <p class="display-6" style="color:white">
+            <bold>Create New Password</bold>
+        </p>
+        <div style="width: fit-content; padding: 10px; margin:auto; " class="bg-white rounded">
+            <img src="https://us.123rf.com/450wm/tuktukdesign/tuktukdesign1608/tuktukdesign160800043/61010830-user-icon-man-profile-businessman-avatar-person-glyph-vector-illustration.jpg?ver=6"
+                alt="" style="width: 50px; bottom:100">
+            <form action="/cp" method="post" class="pt-2 pb-2">
+                <div class="mb-2 pt-1 pb-1 pe-2 ps-2 rounded"
+                    style="background-color: #495371;width: fit-content; height: 60px; margin:auto">
+                    <input type="password" placeholder="New Password" name="ps1"
+                        style="outline:nane;height:50px; margin:0;">
+                </div>
+                <div class=" mb-2 pt-1 pb-1 pe-2 ps-2 rounded"
+                    style="background-color: #495371;width: fit-content; height: 60px; margin:auto">
+                    <input type="password" name="ps2" placeholder="Retype New Password"
+                        style="outline:nane;height:50px; margin:0;">
+                </div>
+                <button class="m-1 btn btn-outline-success" type="submit">Change Password</button>
+                <p>
+                    <%= err %>
+                </p>
+            </form>
+        </div>
     </div>
-</div> <%- include("includes/foot") %>
+    <%- include("includes/foot") %>

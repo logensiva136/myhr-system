@@ -1,21 +1,22 @@
 <%- include('includes/head') %>
-<%- include("includes/sidebar") %>
-<%- include("includes/img") %>
-<div id="topPusher">
-    <form action="/addUser" class="form-control form-custom">
-        <h2 class="mb-5 text-center">Enter Employee Details</h2>
-        <input type="text" name="idnum" id="idnum" disabled="true" placeholder="Employee ID">
-        <div>
-            <input type="text" name="fname" id="employeeName" placeholder="First Name">
-            <input type="text" name="lname" id="employeeName" placeholder="Last Name">
-        </div>
-        <p class="text-center">Create Password</p>
-        <div>
-            <input type="password" placeholder="New Password">
-            <input type="password" placeholder="Retype Password">
-        </div>
-        <button type="submit" class="btn btn-primary">Create Profile</button>
-        <button type="reset" class="btn btn-danger">Clear Information</button>
-    </form>
-</div>
-<%- include('includes/foot') %>
+    <%- include("includes/sidebar") %>
+        <%- include("includes/img") %>
+            <div id="topPusher">
+                <form action="/addUser" class="form-control form-custom">
+                    <h2 class="mb-5 text-center">Enter Employee Details</h2>
+                    <input type="text" name="idnum" id="idnum" value="Employee ID : <%= data.idnum %>" disabled="true"
+                        placeholder="Employee ID">
+                    <div>
+                        <input type="text" name="fname" id="employeeName" placeholder="First Name" required>
+                        <input type="text" name="lname" id="employeeName" placeholder="Last Name" required>
+                    </div>
+                    <p class="text-center">Change Password</p>
+                    <div>
+                        <input type="password" name="ps1" placeholder="New Password" required>
+                        <input type="password" name="ps2" placeholder="Retype Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Profile</button>
+                    <button type="reset" class="btn btn-danger">Clear Information</button>
+                </form>
+            </div>
+            <%- include('includes/foot') %>

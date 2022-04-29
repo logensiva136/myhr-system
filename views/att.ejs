@@ -13,12 +13,13 @@
         <p name="realTimeClock" id="realTimeClock" class="display-4"></p>
         <div>
           <!-- submit btn -->
-          <form method="post" action="/att" onSubmit="latechecker()">
+          <form method="post" action="/att" id="att">
             <!-- btnVisible should declared in below class -->
-            <button type="submit" class="rounded b-no bg-warning <%= (true) ? '' : 'd-none' %>"
+            <button id="theBtn" type="submit" class="rounded b-no bg-warning <%= (btnVisible) ? '' : 'd-none' %>"
               value="<%= clockInOutState ? 'in' : 'out' %>">
               <%= clockInOutState ? 'Clock In' : 'Clock Out' %>
             </button>
+            <input type="hidden" value="" id="reason" name="reason">
             <!-- <input type="hidden" name="theTime" id="theTime" /> -->
             <input type="hidden" name="status" value="<%=  clockInOutState ? 'in' : 'out' %>" />
           </form>

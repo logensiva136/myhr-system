@@ -1,0 +1,65 @@
+<%- include("includes/head") %>
+    <!-- sidebar -->
+    <%- include("includes/sidebar" ) %>
+        <!-- img -->
+        <%- include("includes/img") %>
+            <!-- content box  -->
+            <div id="topPusher">
+            </div>
+
+            <!-- <div class="text-center">
+                <h4 class="text-center">My Salary</h4>
+                // <% years.map(year=>{ %>
+                    <h5>
+                        <%= year %>
+                    </h5>
+                    <table class="noBorderTable">
+                        <tr>
+                            <td>Month</td>
+                            <td>Base Salary</td>
+                            <td>Over Time</td>
+                            <td>Unpaid Leave(s)</td>
+                            <td>Total</td>
+                            <td>Attachment</td>
+                        </tr>
+                        <tr>
+
+                        </tr>
+                    </table>
+                    <% }) %>
+            </div> -->
+            <!-- <br>
+            <% if(role==="admin" ) {%>
+                <div class="text-center">
+                    <h4 class="text-center">User's Salary</h4>
+                    <select name="userlist" id="userlist">
+                        <option value="none">--- Select User</option>
+                        <% totalUser.map((data)=>{ %>
+                            <option value="<%= data.username %>">
+                                <%= data.first_name + " " + data.last_name %>
+                            </option>
+                            <% }) %>
+                    </select>
+                    <br>
+
+                    <table class="noBorderTable">
+                        <tr>
+                            <td>Month</td>
+                            <td>Base Salary</td>
+                            <td>Over Time</td>
+                            <td>Unpaid Leave(s)</td>
+                            <td>Total</td>
+                            <td>Attachment</td>
+                        </tr>
+                        <tr>
+                            <td>Month</td>
+                            <td>Base Salary</td>
+                            <td>Over Time</td>
+                            <td>Unpaid Leave(s)</td>
+                            <td>Total</td>
+                            <td>Attachment</td>
+                        </tr>
+                    </table>
+                </div>
+                <% } %> -->
+            <%- include("includes/foot") %>

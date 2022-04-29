@@ -1,49 +1,52 @@
 <%- include('includes/head') %>
-<%- include("includes/sidebar", {role:role} ) %>
-<%- include("includes/img") %>
+    <%- include("includes/sidebar", {role:role} ) %>
+        <%- include("includes/img") %>
 
 
-<div id="topPusher" class="">
-    <table class="noBorderTable">
-        <tr>
-            <th>Leave Type</th>
-            <th>Leave Balance</th>
-            <th>Leave Approved</th>
-        </tr>
-        <tr>
-            <td>Medical Leave</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Annual Leave</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Hospitalization Leave</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>Maternity Leave</td>
-            <td></td>
-        </tr>
-    </table>
-    <hr>
-    <form action="/applyLeave" class="form-custom">
-        <h2 class="mb-5 text-center">Apply Leave</h2>
-        <select name="leaveType" id="">
-            <option value="a">a</option>
-            <option value="a">a</option>
-            <option value="a">a</option>
-            <option value="a">a</option>
-        </select>
-        <div>
-            <input type="date" name="startDate" id="" placeholder="Start">
-            <input type="date" name="startDate" id="" placeholder="Start">
-        </div>
-        <input type="textarea" name="reason" id="" placeholder="Reason">
-        <input type="file">
-        <button type="submit" class="btn btn-primary">Request Leave</button>
-    </form>
-</div>
+            <div id="topPusher" class="">
+                <table class="noBorderTable">
+                    <tr>
+                        <th>Leave Type</th>
+                        <th>Leave Balance</th>
+                        <th>Leave Approved</th>
+                    </tr>
+                    <tr>
+                        <td>Medical Leave</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Annual Leave</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Hospitalization Leave</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Maternity Leave</td>
+                        <td></td>
+                    </tr>
+                </table>
+                <hr>
+                <form action="/applyLeave" class="form-custom">
+                    <h2 class="mb-5 text-center">Apply Leave</h2>
+                    <select name="leaveType" id="">
+                        <!-- <option value="none">---Leave types---</option> -->
+                        <option value="medical">Medical Leave</option>
+                        <option value="annual">Annual Leave</option>
+                        <option value="hospital">Hospitalization Leave</option>
+                        <option value="maternity">Maternity Leave</option>
 
-<%- include('includes/foot') %>
+                    </select>
+                    <div>
+                        <input type="date" name="startDate" id="" required>
+                        <input type="date" name="endDate" id="" required>
+                    </div>
+                    <input type="textarea" name="reason" id="" placeholder="Reason" required>
+                    <input type="file" name="attachment" id="" placeholder=""
+                        accept="image/png, image/gif, image/jpeg,application/pdf">
+                    <button type="submit" class="btn btn-primary">Request Leave</button>
+                </form>
+            </div>
+
+            <%- include('includes/foot') %>

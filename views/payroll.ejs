@@ -4,60 +4,52 @@
         <!-- img -->
         <%- include("includes/img") %>
             <!-- content box  -->
-            <div id="topPusher">
-            </div>
-            <div class="text-center">
-                <h4 class="text-center">My Salary</h4>
-                <table class="noBorderTable">
-                    <tr>
-                        <td>Month</td>
-                        <td>Base Salary</td>
-                        <td>Over Time</td>
-                        <td>Unpaid Leave(s)</td>
-                        <td>Total</td>
-                        <td>Attachment</td>
-                    </tr>
-                    <% months.map(m=>{ %>
+            <div id="topPusher"></div>
+            <h4 class="text-center">My Payroll</h4>
+            <!-- table loops -->
+            <% years.map((data)=>{ %>
+                <table class="noBorderTable text-center">
+                    <h4 class="text-center">
+                        <%= data %>
+                    </h4>
+                    <!-- month loops -->
+                    <% months.map((data)=>{ %>
                         <tr>
-                            <td>
-                                <%= m %>
-                            </td>
+                            <td>Month</td>
                             <td>Base Salary</td>
-                            <td>Over Time</td>
-                            <td>Unpaid Leave(s)</td>
+                            <td>Additional</td>
                             <td>Total</td>
                             <td>Attachment</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <%= data %>
+                            </td>
+                            <td>RM <%= salary %>
+                            </td>
+                            <td>Additional</td>
+                            <td>
+                                <% totals %>
+                            </td>
+                            <form style="margin: 0;padding: 0;" action="" method="post">
+                                <td><button type="submit" class="btn btn-success">Generate PDF</button></td>
+                            </form>
                         </tr>
                         <% }) %>
                 </table>
-            </div>
-            <% if(role==="admin" ) {%>
-                <div class="text-center">
-                    <h4 class="text-center">User's Salary</h4>
-                    <select name="" id="">
-                        <option value="">a</option>
-                        <option value="">a</option>
-                        <option value="">a</option>
-                        <option value="">a</option>
-                    </select>
-                    <table class="noBorderTable">
-                        <tr>
-                            <td>Month</td>
-                            <td>Base Salary</td>
-                            <td>Over Time</td>
-                            <td>Unpaid Leave(s)</td>
-                            <td>Total</td>
-                            <td>Attachment</td>
-                        </tr>
-                        <tr>
-                            <td>Month</td>
-                            <td>Base Salary</td>
-                            <td>Over Time</td>
-                            <td>Unpaid Leave(s)</td>
-                            <td>Total</td>
-                            <td>Attachment</td>
-                        </tr>
-                    </table>
-                </div>
-                <% } %>
-                    <%- include("includes/foot") %>
+                <% }) %>
+                    <br>
+                    <h4 class="text-center">Additional Pay</h4>
+                    <% if(role==="admin" ){%>
+                        <form method="post" action="/payroll" class="form-control form-custom text-center">
+                            Claims <input type="number" value="0" min="0" max="99999" placeholder="Claims" required>
+                            Leaves <input type="number" value="0" min="0" max="99999" placeholder="Leaves" required>
+                            Others <input type="number" value="0" min="0" max="99999" placeholder="Others" required>
+                            Substractions <input type="number" value="0" min="0" max="99999" placeholder="Substractions"
+                                required>
+                            <button type="submit" class="btn btn-primary">Create Profile</button>
+
+                        </form>
+                        <% } %>
+
+                            <%- include("includes/foot") %>

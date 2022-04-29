@@ -3,52 +3,105 @@
         <%- include("includes/img") %>
 
             <div id="topPusher" class="mb-4">
-                <table class="noBorderTable">
-                    <tr>
-                        <th>Approved Claim(s)</th>
-                        <td class="text-center">123</td>
-                    </tr>
-                    <tr>
-                        <th>Rejected Claim(s)</th>
-                        <td class="text-center">123</td>
-                    </tr>
-                    <tr>
-                        <th>Pending Claim(s)</th>
-                        <td class="text-center">123</td>
-                    </tr>
-                    <tr>
-                        <th>Total Claimed (RM)</th>
-                        <td class="text-center">RM 123</td>
-                    </tr>
-                </table>
-                <hr>
-                <div>
-                    <form action="/eclaim" method="post" class="form-custom text-center" enctype="multipart/form-data">
-                        <p>Date : <%= ecDt %>
-                        </p>
-                        <div>
-                            <p>Type of Claim:</p>
-                            <select class="ms-2 form-custom style=" border-radius: 5px;" name="typeOfClaim" id=""
+                <% if(role!=="admin" ) {%>
+                    <table class="noBorderTable">
+                        <tr>
+                            <th>Approved Claim(s)</th>
+                            <td class="text-center">
+                                <%= all ? 0 : ap %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Rejected Claim(s)</th>
+                            <td class="text-center">
+                                <%= all ? 0 : rj %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Pending Claim(s)</th>
+                            <td class="text-center">
+                                <%= all ? 0 : pn %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Total Claimed (RM)</th>
+                            <td class="text-center">
+                                <%= total %>
+                            </td>
+                        </tr>
+                    </table>
+                    <hr>
+                    <div>
+                        <form action="/eclaim" method="post" class="form-custom text-center"
+                            enctype="multipart/form-data">
+                            <p>Date : <%= ecDt %>
+                            </p>
+                            <div>
+                                <p>Type of Claim:</p>
+                                <select class="ms-2 form-custom style=" border-radius: 5px;" name="typeOfClaim" id=""
+                                    required>
+                                    <option value="petrol">Petrol Claim</option>
+                                    <option value="others">Others Claim</option>
+                                    <option value="maternity">Maternity Claim</option>
+                                    <option value="dental">Dental Claim</option>
+                                    <option value="entertainment">Entertainment Claim</option>
+                                </select>
+                            </div>
+                            <input type="text" name="" id="" placeholder="Bill / Invoice No. / Ref. No." required>
+                            <input type="number" step="0.01" min="0" max="100000" placeholder="Amount" name="amount"
                                 required>
-                                <option value="petrol">Petrol Claim</option>
-                                <option value="others">Others Claim</option>
-                                <option value="maternity">Maternity Claim</option>
-                                <option value="dental">Dental Claim</option>
-                                <option value="entertainment">Entertainment Claim</option>
-                            </select>
-                        </div>
-                        <input type="text" name="" id="" placeholder="Bill / Invoice No. / Ref. No." required>
-                        <input type="number" step="0.01" min="0" max="100000" placeholder="Amount" name="amount"
-                            required>
-                        <textarea name="justify" placeholder="Justification" required></textarea>
-                        <p>Upload Receipt:</p>
-                        <input type="file" name="attachment" id="" placeholder=""
-                            accept="image/png, image/gif, image/jpeg,application/pdf">
-                        <p>
-                            <%= state ? "success" : "" %>
-                        </p>
-                        <button type="submit" class="btn btn-primary">Submit Claim</button>
-                    </form>
-                </div>
+                            <textarea name="justify" placeholder="Justification" required></textarea>
+                            <p>Upload Receipt:</p>
+                            <input type="file" name="attachment" id="" placeholder=""
+                                accept="image/png, image/gif, image/jpeg,application/pdf">
+                            <p>
+                                <%= state ? "success" : "" %>
+                            </p>
+                            <button type="submit" class="btn btn-primary">Submit Claim</button>
+                        </form>
+                        <% }else{ %>
+                            <table class="noBorderTable">
+                                <tr>
+                                    <td>Claim ID</td>
+                                    <td>Username</td>
+                                    <td>Type of Claim</td>
+                                    <td>Create On</td>
+                                    <td>Amount</td>
+                                    <td>Justification</td>
+                                    <td>Attachment</td>
+                                    <td>Action</td>
+                                </tr>
+                                <% if(!all) {%>
+                                    <% all.map(data=>{ %>
+                                        <%= data %>
+                                            <tr>
+                                                <td>
+                                                    <%= data.claim_id %>
+                                                </td>
+                                                <td>
+                                                    <%= data.username %>
+                                                </td>
+                                                <td>
+                                                    <%= data.toc %>
+                                                </td>
+                                                <td>
+                                                    <%= moment(data.date).format("MMM Do YY") %>
+                                                </td>
+                                                <td>
+                                                    <%= data.amount %>
+                                                </td>
+                                                <td>
+                                                    <%= data.justify %>
+                                                </td>
+                                                <td><a href="<%= data.attament %>"></a></td>
+                                                <td>Action</td>
+                                            </tr>
+                                            <% }) %>
+                                                <% }else{ %>
+                                                    <td class="text-center" colspan="8">No Data</td>
+                                                    <% } %>
+                            </table>
+                            <% } %>
+                    </div>
             </div>
             <%- include("includes/foot") %>

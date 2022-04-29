@@ -1,3 +1,25 @@
+let result = null;
+$("#att").submit(function (e) {
+  if ($("#theBtn").attr("value") === "in") {
+    if (moment().format("H") > 8) {
+      if (result === null) {
+        result = prompt("Justification for late clock in.")
+        $("#reason").val(result);
+      } else {
+        $("#reason").attr("value", "");
+      }
+    }
+  } else {
+    if (moment().format("H") < 18) {
+      if (result === null) {
+        result = prompt("Justification for early clock out.")
+        $("#reason").val(result);
+      } else {
+        $("#reason").attr("value", "");
+      }
+    }
+  }
+})
 
 //clock//
 function getTime() {
@@ -10,8 +32,6 @@ function getTime() {
   let secs = newTime.getSeconds("ss");
   secs = ("0" + secs).slice(-2);
   $("#realTimeClock").text(hrs + ":" + mins + ":" + secs);
-  // $("#realTimeClock").text(moment().format('LTS'));
-  // $('#theTime').val(newTime.toISOString());
 }
 setInterval(getTime, 900);
 
@@ -27,15 +47,3 @@ pushHeight = pushHeight + "px";
 document.getElementById("body").style.marginLeft = pushWidth;
 document.getElementById("topPusher").style.marginTop = pushHeight;
 document.getElementById("topPusher").style.marginBottom = "1.5rem";
-
-$('#reason').click(function () {
-  if ($("#reason").val() === "out") {
-    alert("logen")
-  }
-})
-
-function latechecker(e) {
-  e.preventDefault();
-  console.log(moment().toLocaleString())
-
-}
