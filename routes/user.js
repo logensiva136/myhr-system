@@ -21,7 +21,7 @@ route.get("/addUser", userController.getAddUser);
 route.post("/addUser", userController.postAddUser);
 
 route.get("/eleave", userController.getEleave);
-// route.post('/eleave', userController.postEleave)
+route.post('/eleave', userController.postEleave)
 
 route.get("/sp", userController.getSP);
 
@@ -29,7 +29,7 @@ route.get("/eclaim", userController.getClaim);
 route.post("/eclaim", userController.postClaim);
 
 route.get("/setting", userController.getSetting);
-// route.post('/eclaim', userController.postSetting)
+
 
 route.get("/401", userController.au);
 
@@ -38,5 +38,11 @@ route.post("/cp", userController.postCP);
 
 route.get("/payroll", userController.getPay);
 // route.post("/payroll", userController.postPay);
+
+route.get("/download/:dwurl", userController.getDown)
+
+route.post("/eclaim/approve/:url", userController.getApproveClaimParams)
+route.post("/eclaim/reject/:url", userController.getRejectClaimParams)
+// route.get("/download", userController.getDown)
 
 module.exports = route;

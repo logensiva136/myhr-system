@@ -19,15 +19,15 @@ const allUserData = (cb) => {
 };
 
 exports.listUsers = () => {
-  return allUserData(data => { return data })
-}
-
-
+  return allUserData((data) => {
+    return data;
+  });
+};
 
 exports.getDetailsByUsername = (username, cb) => {
-  allUserData(data => {
-    cb(data.filter((res) => res.username === username))
-  }).catch(err => console.log(err))
+  allUserData((data) => {
+    cb(data.filter((res) => res.username === username));
+  }).catch((err) => console.log(err));
 };
 
 exports.postNewUser = (
@@ -79,30 +79,32 @@ exports.patchUserPassword = (row_id, newPs, cb) => {
       ftl: false,
     },
   })
-    .then(data => cb(data))
+    .then((data) => cb(data))
     .catch((err) => console.log(err.toJSON()));
 };
 
 exports.getClockInOutByUser = (username, cb) => {
   return api({
     method: "GET",
-    url: "database/rows/table/47850/?user_field_names=true"
+    url: "database/rows/table/47850/?user_field_names=true",
   })
-    .then((data) => cb(data.data.results.filter(atts => atts.username === username)))
+    .then((data) =>
+      cb(data.data.results.filter((atts) => atts.username === username))
+    )
     .catch((err) => console.log(err));
-
-}
+};
 exports.getAllCICO = () => {
   return api({
     method: "GET",
     url: "database/rows/table/47850/?user_field_names=true",
-  }).then(data => {
-    return data.data.results
-  }).catch(err => console.log(err))
-}
+  })
+    .then((data) => {
+      return data.data.results;
+    })
+    .catch((err) => console.log(err));
+};
 
 exports.postClockIn = (username, id, reason_in) => {
-
   if (reason_in) {
     return api({
       method: "POST",
@@ -136,27 +138,31 @@ exports.postClockOut = (username, reason_out) => {
   const now = new Date();
   return api({
     method: "GET",
-    url: "database/rows/table/47850/?user_field_names=true"
+    url: "database/rows/table/47850/?user_field_names=true",
   })
     .then((data) => {
-      const filteredData = data.data.results.filter(val => val.username === username)
+      const filteredData = data.data.results.filter(
+        (val) => val.username === username
+      );
       if (reason_out) {
         return api({
           method: "patch",
-          url: `database/rows/table/47850/${filteredData[filteredData.length - 1].id}/?user_field_names=true`,
+          url: `database/rows/table/47850/${filteredData[filteredData.length - 1].id
+            }/?user_field_names=true`,
           data: {
             out: moment(),
-            reason_out: reason_out
-          }
-        })
+            reason_out: reason_out,
+          },
+        });
       } else {
         return api({
           method: "patch",
-          url: `database/rows/table/47850/${filteredData[filteredData.length - 1].id}/?user_field_names=true`,
+          url: `database/rows/table/47850/${filteredData[filteredData.length - 1].id
+            }/?user_field_names=true`,
           data: {
             out: moment(),
-            reason_out: ""
-          }
+            reason_out: "",
+          },
         });
       }
     })
@@ -164,7 +170,6 @@ exports.postClockOut = (username, reason_out) => {
 };
 
 exports.postClaim = (userid, typeofclaim, amounts, justify, thefile, uname) => {
-
   const idn = Math.floor(1000 + Math.random() * 9000);
   const now = new Date();
   return api({
@@ -179,55 +184,168 @@ exports.postClaim = (userid, typeofclaim, amounts, justify, thefile, uname) => {
       attachment: thefile,
       status: "pending",
       toc: typeofclaim,
-      username: uname
-    }
-  }).catch(err => console.error(err.toJSON()))
-
-}
+      username: uname,
+    },
+  }).catch((err) => console.error(err.toJSON()));
+};
 
 exports.getClaim = () => {
-  return api({ method: "GET", url: `https://api.baserow.io/api/database/rows/table/47872/?user_field_names=true` }).
-    then(data => { return data.data.results }).catch(err => {
-      console.log(err)
+  return api({
+    method: "GET",
+    url: `https://api.baserow.io/api/database/rows/table/47872/?user_field_names=true`,
+  })
+    .then((data) => {
+      return data.data.results;
     })
+    .catch((err) => {
+      console.log(err);
+    });
   // // console.log(allClaims)
   // const filterClaims = allClaims.filter(data => data.username === uname)
   // // console.log(filterClaims[0])
-}
+};
+
 exports.getClaimByUser = (uname) => {
-  return api({ method: "GET", url: `https://api.baserow.io/api/database/rows/table/47872/?user_field_names=true` }).
-    then(data => {
-      return data.data.results.filter(data => {
-        return data.username === uname
-      })
-    }).catch(err => {
-      console.log(err)
+  return api({
+    method: "GET",
+    url: `https://api.baserow.io/api/database/rows/table/47872/?user_field_names=true`,
+  })
+    .then((data) => {
+      return data.data.results.filter((data) => {
+        return data.username === uname;
+      });
     })
+    .catch((err) => {
+      console.log(err);
+    });
   // // console.log(allClaims)
   // const filterClaims = allClaims.filter(data => data.username === uname)
   // // console.log(filterClaims[0])
-}
+};
+const claims = () => {
+  return api({
+    method: "GET",
+    url: `https://api.baserow.io/api/database/rows/table/47872/?user_field_names=true`,
+  })
+    .then((data) => {
+      return data.data.results;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+const leaves = () => {
+  return api({
+    method: "GET",
+    url: `https://api.baserow.io/api/database/rows/table/57611/{row_id}/?user_field_names=true://api.baserow.io/api/database/rows/table/47872/?user_field_names=true`,
+  })
+    .then((data) => {
+      return data.data.results;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+exports.patchClaim = async (claimId) => {
+  console.log(claimId);
+  const allClaims = await claims();
+  console.log(allClaims);
+  const filteredClaims = allClaims.filter((data) => {
+    data.claim_id === claimId;
+  });
+
+  console.log(filteredClaims);
+
+  // return api({ url: `https://api.baserow.io/api/database/rows/table/47872/${claimId}/?user_field_names=true` })
+};
 
 exports.getPayroll = () => {
   return api({
     method: "GET",
     url: "database/rows/table/47849/?user_field_names=true",
-  }).then(data => {
-    return data.data.results
-  }).catch(err => console.log(err))
+  })
+    .then((data) => {
+      return data.data.results;
+    })
+    .catch((err) => console.log(err));
+};
+
+exports.getLeaves = () => {
+  return api({
+    url: "https://api.baserow.io/api/database/rows/table/57611/?user_field_names=true",
+  }).then(data => data.data.results);
+};
+
+exports.postLeaves = (tol, sd, ed, userid) => {
+  const idn = Math.floor(1000 + Math.random() * 9000);
+  // const checkUserLeftLeave = 
+  return api({
+    url: "https://api.baserow.io/api/database/rows/table/57611/?user_field_names=true",
+    data: {
+      leave_request_id: idn,
+      tol: tol,
+      start_date: sd,
+      end_date: ed,
+      user_id: [userid],
+      status: "pending"
+    },
+  });
+};
+
+exports.patchLeave = (lid, status) => {
+
+  return api({
+    url: `https://api.baserow.io/api/database/rows/table/57611/${lid}/?user_field_names=true`
+  })
 }
+
+exports.getLeaveByUser = (userid) => {
+  return api({
+    method: "GET",
+    url: `https://api.baserow.io/api/database/rows/table/57611/?user_field_names=true`,
+  })
+    .then((data) => {
+      return data.data.results.filter((data) => {
+        return data.idnum === userid;
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
 
 exports.postPayroll = (row_id, cb) => {
   api({
     method: "GET",
     url: "database/rows/table/47849/?user_field_names=true",
-  }).then(data => {
-    const filteredPayrollData = data.data.results.filter(theData => theData.id === row_id)
-    console.log(filteredPayrollData);
-    api({
-      method: "PATCH",
-      url: `database/rows/table/47849/${row_id}/?user_field_names=true`,
-      salary: { ...filteredPayrollData, }
+  })
+    .then((data) => {
+      const filteredPayrollData = data.data.results.filter(
+        (theData) => theData.id === row_id
+      );
+      console.log(filteredPayrollData);
+      api({
+        method: "PATCH",
+        url: `database/rows/table/47849/${row_id}/?user_field_names=true`,
+        salary: { ...filteredPayrollData },
+      });
     })
-  }).catch(err => console.log(err))
+    .catch((err) => console.log(err));
+};
+
+
+exports.postSP = (sd, ed, desc, uname, uid) => {
+  const idn = Math.floor(1000 + Math.random() * 9000);
+  api({
+    url: "https://api.baserow.io/api/database/rows/table/61247/?user_field_names=true"
+    , data: {
+      idnum: idn,
+      startDate: sd,
+      endDate: ed,
+      description: desc,
+      username: uname,
+      userId: [userId]
+    }
+  })
 }

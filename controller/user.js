@@ -179,15 +179,6 @@ exports.getAddUser = (req, res, next) => {
       username: req.session.fn,
       error: "",
     });
-    // const newArr = [];
-    if (recentArr.length < 1) {
-      recentArr.push("R");
-    } else {
-      recentArr.pop("R");
-      recentArr.push("R", ...recentArr);
-    }
-    req.cookie = "recents=" + recentArr;
-    console.log(req.cookie);
   } else {
     req.session.currentDir = req.originalUrl;
     res.redirect("/");
@@ -240,17 +231,17 @@ exports.getLogout = (req, res, next) => {
   });
 };
 
-exports.getEleave = (req, res, next) => {
-  if (recentArr.length < 1) {
-    recentArr.push("L");
-  } else if (recentArr.includes("L")) {
-    recentArr.pop("L");
-    recentArr.push("L", ...recentArr);
-  }
+exports.getEleave = async (req, res, next) => {
   if (req.session.username) {
+    const allLeaves = await userDB.getLeaves();
+    // const allusers = await userDB.listUsers();
+    const userLeave = await userDB.getLeaveByUser(req.session.rowId);
+    console.log(allLeaves);
     res.render("eleave", {
       role: req.session.role,
       username: req.session.fn,
+      allLeaves: allLeaves,
+      userLeave: userLeave,
     });
   } else {
     req.session.currentDir = req.originalUrl;
@@ -258,12 +249,12 @@ exports.getEleave = (req, res, next) => {
   }
 };
 
-// exports.getEleave = (req, res, next) => {
-//   res.render("eleave", {
-//     error: "",
-//     role: "admin"
-//   })
-// }
+exports.postEleave = (req, res, next) => {
+  // console.log(req.body.leaveType, req.body.startDate, req.body.endDate)
+
+  userDB.postLeave();
+  res.redirect("/eleave");
+};
 
 exports.getSP = (req, res, next) => {
   const today = new Date();
@@ -274,7 +265,7 @@ exports.getSP = (req, res, next) => {
   if (req.session.username) {
     res.render("smartPlanner", {
       role: req.session.role,
-      days: cal.monthDays(2022, 2),
+
       todayDate: thisDate,
       username: req.session.fn,
     });
@@ -283,6 +274,10 @@ exports.getSP = (req, res, next) => {
     res.redirect("/");
   }
 };
+
+exports.postSP = () => {
+
+}
 
 exports.getClaim = async (req, res, next) => {
   if (req.session.username) {
@@ -295,7 +290,9 @@ exports.getClaim = async (req, res, next) => {
           ? 0
           : claimData.filter((data) => data.status === "approved");
       const pendingClaims =
-        claimData < 1 ? 0 : claimData.filter((data) => data.status === "pending");
+        claimData < 1
+          ? 0
+          : claimData.filter((data) => data.status === "pending");
       const rejectedClaims =
         claimData < 1
           ? 0
@@ -304,7 +301,7 @@ exports.getClaim = async (req, res, next) => {
         totalRM = totalRM + +approvedClaims[i].amount;
         i++;
       }
-      console.log(claimData)
+      // console.log(claimData)
       // const getAmounts = claimData.map(data => data.amount)
       // console.log(getAmounts)
       res.render("eclaim", {
@@ -327,7 +324,9 @@ exports.getClaim = async (req, res, next) => {
           ? 0
           : claimData.filter((data) => data.status === "approved");
       const pendingClaims =
-        claimData < 1 ? 0 : claimData.filter((data) => data.status === "pending");
+        claimData < 1
+          ? 0
+          : claimData.filter((data) => data.status === "pending");
       const rejectedClaims =
         claimData < 1
           ? 0
@@ -336,7 +335,7 @@ exports.getClaim = async (req, res, next) => {
         totalRM = totalRM + +approvedClaims[i].amount;
         i++;
       }
-      console.log(claimData)
+      // console.log(claimData)
       res.render("eclaim", {
         role: req.session.role,
         ecDt: new Date().toLocaleDateString(),
@@ -347,13 +346,26 @@ exports.getClaim = async (req, res, next) => {
         rj: rejectedClaims !== 0 ? rejectedClaims.length : 0,
         total: totalRM,
         all: claimData,
-        moment: moment
+        moment: moment,
       });
     }
   } else {
     req.session.currentDir = req.originalUrl;
     res.redirect("/");
   }
+};
+
+exports.getDown = (req, res, next) => {
+  res.download("uploads/" + req.params.dwurl, req.params.dwurl);
+};
+
+exports.getApproveClaimParams = (req, res, next) => {
+  userDB.patchClaim(req.params.url);
+  res.redirect("/eclaim");
+};
+exports.getRejectClaimParams = (req, res, next) => {
+  userDB.patchClaim(req.params.url.split("/")[1]);
+  res.redirect("/eclaim");
 };
 
 exports.postClaim = (req, res, next) => {
@@ -410,6 +422,8 @@ exports.getPay = async (req, res, next) => {
     const allPayroll = await userDB.getPayroll();
     const allClaim = await userDB.getClaim();
     const allCICO = await userDB.getAllCICO();
+    const allUser = await userDB.listUsers();
+    // console.log(allUser)
 
     //get salary only
     let mySalary = allPayroll.filter(
@@ -422,67 +436,72 @@ exports.getPay = async (req, res, next) => {
     ];
     function getMonthName(monthNum) {
       switch (monthNum) {
-        case '0':
-          return "Jan"
-        case '1':
-          return "Feb"
-        case '2':
-          return "Mar"
-        case '3':
-          return "Apr"
-        case '4':
-          return "May"
-        case '5':
-          return "Jun"
-        case '6':
-          return "Jul"
-        case '7':
-          return "Aug"
-        case '8':
-          return "Sept"
-        case '9':
-          return "Oct"
-        case '10':
-          return "Nov"
-        case '11':
-          return "Dec"
+        case "0":
+          return "Jan";
+        case "1":
+          return "Feb";
+        case "2":
+          return "Mar";
+        case "3":
+          return "Apr";
+        case "4":
+          return "May";
+        case "5":
+          return "Jun";
+        case "6":
+          return "Jul";
+        case "7":
+          return "Aug";
+        case "8":
+          return "Sept";
+        case "9":
+          return "Oct";
+        case "10":
+          return "Nov";
+        case "11":
+          return "Dec";
         default:
-          return "logen"
+          return "logen";
       }
     }
     const months = [
-      ...new Set(allCICO.map((e) => { return getMonthName(moment(e.in).format('M')) }))
+      ...new Set(
+        allCICO.map((e) => {
+          return getMonthName(moment(e.in).format("M"));
+        })
+      ),
     ];
     // overtime calc - moment(data.out).diff(data.in, 'hours') >= 10
-    const getOvertimesbyUser = allCICO.filter(data => {
-      return moment(data.out).diff(data.in, 'hours') >= 10
-    })
+    const getOvertimesbyUser = allCICO.filter((data) => {
+      return moment(data.out).diff(data.in, "hours") >= 10;
+    });
 
     //get total days in that month
     function daysInMonth(val) {
-      return val.map(e => {
-        var dt = new Date(e.in)
+      return val.map((e) => {
+        var dt = new Date(e.in);
         var month = dt.getMonth();
         var year = dt.getFullYear();
         const a = new Date(year, month, 0).getDate();
         return a;
-      })
+      });
     }
     // console.log(getOvertimesbyUser)
-    const dim = daysInMonth(allCICO)
+    const dim = daysInMonth(allCICO);
     //returning an array
-    const salaryPerDay = dim.map(data => { return mySalary / data })
+    const salaryPerDay = dim.map((data) => {
+      return mySalary / data;
+    });
 
     //checking additional pays
-    const allApprovedClaims = allClaim.filter(data => {
-      data.status === "pending"
-    })
+    const allApprovedClaims = allClaim.filter((data) => {
+      data.status === "pending";
+    });
 
-    const thisMonthClaims = allApprovedClaims.filter(data => {
-      data === data
-
-    })
-    console.log(thisMonthClaims)
+    const thisMonthClaims = allApprovedClaims.filter((data) => {
+      data === data;
+    });
+    console.log(thisMonthClaims);
 
     res.render("payroll", {
       username: req.session.username,
@@ -494,7 +513,8 @@ exports.getPay = async (req, res, next) => {
       years: years,
       months: months,
       role: req.session.role,
-      totals: salaryPerDay
+      totals: salaryPerDay,
+      totalUser: allUser,
     });
   } else {
     req.session.currentDir = req.originalUrl;

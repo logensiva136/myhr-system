@@ -92,10 +92,23 @@
                                                 <%= data.amount %>
                                             </td>
                                             <td>
-                                                <%= data.justify %>
+                                                <%= data.justification %>
                                             </td>
-                                            <td><a href="<%= data.attache %>"></a></td>
-                                            <td>Action</td>
+                                            <td>
+                                                <% const url=data.attachment.split("/")[1] %>
+                                                    <form action="/download/<%= url %>" method="get">
+                                                        <input type="submit" class="btn btn-info btn-sm"
+                                                            value="Download">
+                                                    </form>
+                                            <td class="text-center">
+                                                <form action="/eclaim/approve/<%= data.claim_id %>" method="post">
+                                                    <input type="submit" class="btn btn-success btn-sm" value="Approve">
+                                                </form>
+                                                <form action="/eclaim/reject/<%= data.claim_id %>" method="post">
+                                                    <input type="submit" class="btn btn-danger btn-sm" value="Reject">
+                                                </form>
+                                            </td>
+
                                         </tr>
                                         <% }) %>
                                             <% }else{ %>

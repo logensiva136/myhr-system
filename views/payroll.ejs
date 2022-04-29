@@ -29,7 +29,7 @@
                             </td>
                             <td>Additional</td>
                             <td>
-                                <% totals %>
+                                1200
                             </td>
                             <form style="margin: 0;padding: 0;" action="" method="post">
                                 <td><button type="submit" class="btn btn-success">Generate PDF</button></td>
@@ -39,8 +39,16 @@
                 </table>
                 <% }) %>
                     <br>
-                    <h4 class="text-center">Additional Pay</h4>
                     <% if(role==="admin" ){%>
+                        <h4 class="text-center">Additional Pay</h4>
+                        <select>
+                            <% totalUser.map((data)=>{ %>
+                                <option value="<%= data.username %>">
+                                    <%= data.first_name + " " + data.last_name %>
+                                </option>
+                                <% }) %>
+                        </select>
+                        <br>
                         <form method="post" action="/payroll" class="form-control form-custom text-center">
                             Claims <input type="number" value="0" min="0" max="99999" placeholder="Claims" required>
                             Leaves <input type="number" value="0" min="0" max="99999" placeholder="Leaves" required>

@@ -4,49 +4,87 @@
 
 
             <div id="topPusher" class="">
-                <table class="noBorderTable">
-                    <tr>
-                        <th>Leave Type</th>
-                        <th>Leave Balance</th>
-                        <th>Leave Approved</th>
-                    </tr>
-                    <tr>
-                        <td>Medical Leave</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Annual Leave</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Hospitalization Leave</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>Maternity Leave</td>
-                        <td></td>
-                    </tr>
-                </table>
-                <hr>
-                <form action="/applyLeave" class="form-custom">
-                    <h2 class="mb-5 text-center">Apply Leave</h2>
-                    <select name="leaveType" id="">
-                        <!-- <option value="none">---Leave types---</option> -->
-                        <option value="medical">Medical Leave</option>
-                        <option value="annual">Annual Leave</option>
-                        <option value="hospital">Hospitalization Leave</option>
-                        <option value="maternity">Maternity Leave</option>
+                <% if(role==="user" ){ %>
 
-                    </select>
-                    <div>
-                        <input type="date" name="startDate" id="" required>
-                        <input type="date" name="endDate" id="" required>
-                    </div>
-                    <input type="textarea" name="reason" id="" placeholder="Reason" required>
-                    <input type="file" name="attachment" id="" placeholder=""
-                        accept="image/png, image/gif, image/jpeg,application/pdf" required>
-                    <button type="submit" class="btn btn-primary">Request Leave</button>
-                </form>
+                    <table class="text-center noBorderTable">
+                        <tr>
+                            <th>Leave Balance</th>
+                            <th>Leave Approved</th>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+
+
+                    </table>
+                    <hr>
+                    <form action="/eleave" method="post" class="form-custom">
+                        <h2 class="mb-5 text-center">Apply Leave</h2>
+                        <select name="leaveType" id="" required>
+                            <option value="medical">Medical Leave</option>
+                            <option value="annual">Annual Leave</option>
+                            <option value="hospital">Hospitalization Leave</option>
+                            <option value="maternity">Maternity Leave</option>
+
+                        </select>
+                        <div>
+                            <input type="date" name="startDate" id="" required>
+                            <input type="date" name="endDate" id="" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Request Leave</button>
+                    </form>
+                    <br>
+                    <% }else{%>
+                        <h4 class="text-center">User Leaves</h4>
+                        <table class="text-center noBorderTable">
+                            <tr>
+                                <td>Leave ID</td>
+                                <td>Username</td>
+                                <td>Type of Leave</td>
+                                <td>Start Leave</td>
+                                <td>End Leave</td>
+                                <td>Leave Taken</td>
+                                <td>Leave Left</td>
+                                <td>Action</td>
+                            </tr>
+                            <% allLeaves.map(data=>{ %>
+
+
+                                <tr>
+                                    <td>
+                                        <%= data.leave_request_id %>
+                                    </td>
+                                    <td>
+                                        <%= username %>
+                                    </td>
+                                    <td>
+                                        <%= data.tol %>
+                                    </td>
+                                    <td>
+                                        <%= data.start_date %>
+                                    </td>
+                                    <td>
+                                        <%= data.end_date %>
+                                    </td>
+                                    <td>
+                                        <%= data.leave_taken %>
+                                    </td>
+                                    <td>
+                                        <%= data.leave_left %>
+                                    </td>
+                                    <td>
+                                        <form action="/eleave/approve/<%= data.claim_id %>" method="post">
+                                            <input type="submit" class="btn btn-success btn-sm" value="Approve">
+                                        </form>
+                                        <form action="/eleave/reject/<%= data.claim_id %>" method="post">
+                                            <input type="submit" class="btn btn-danger btn-sm" value="Reject">
+                                        </form>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </table>
+                        <% } %>
             </div>
 
             <%- include('includes/foot') %>

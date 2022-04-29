@@ -1,7 +1,36 @@
-<%- include("includes/head")  %>
-<%- include("includes/sidebar")  %>
-<%- include("includes/img")  %>
-<div id="topPusher">
-    <%- include("includes/calendar",{days:days})  %>
-</div>
-<%- include("includes/foot")  %>
+<%- include("includes/head") %>
+    <%- include("includes/sidebar") %>
+        <%- include("includes/img") %>
+            <div id="topPusher">
+                <h3 class="text-center">Smart Planner</h3>
+                <form action="" class="text-center form-custom" method="post">
+
+                    Event Start Date:
+
+                    <input type="date" required>
+                    <br>
+                    Event Start Date:
+
+                    <input type="date" required>
+                    <br>
+                    <input type="text" class="text-center" placeholder="Description" required>
+                    <submit class="btn btn-success">Create Event
+                    </submit>
+                </form>
+                <br>
+                <table class="text-center noBorderTable">
+                    <tr>
+                        <td>ID</td>
+                        <td>Start Date</td>
+                        <td>End Date</td>
+                        <td>Description</td>
+                    </tr>
+                    <tr>
+                        <td>7481</td>
+                        <td>Mar 8, 2022</td>
+                        <td>Mar 8, 2022</td>
+                        <td>Meeting (Project Discussion)</td>
+                    </tr>
+                </table>
+            </div>
+            <%- include("includes/foot") %>
