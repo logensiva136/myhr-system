@@ -40,7 +40,7 @@ route.get("/cp", userController.getCP);
 route.post("/cp", userController.postCP);
 
 route.get("/payroll", userController.getPay);
-// route.post("/payroll", userController.postPay);
+route.post("/payroll", userController.postPay);
 
 route.get("/download/:dwurl", userController.getDown);
 

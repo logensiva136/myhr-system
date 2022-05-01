@@ -22,6 +22,15 @@ const allUserData = (cb) => {
     .catch((err) => console.log(err));
 };
 
+const allPayroll = (cb) => {
+  return api({
+    method: "GET",
+    url: "database/rows/table/47849/?user_field_names=true",
+  })
+    .then((data) => cb(data.data.results))
+    .catch((err) => console.log(err));
+};
+
 exports.listUsers = () => {
   return allUserData((data) => {
     return data;
@@ -407,16 +416,6 @@ exports.getSP = (uname) => {
 };
 
 exports.patchUser = async (fn, ln, pass, id) => {
-  // let allUsers;
-  // await allUserData((data) => {
-  //   allUsers = data;
-  // });
-
-  // const filtereduser = allUsers.filter((data) => {
-  //   return data.id === id;
-  // });
-  // console.log(filtereduser);
-
   api({
     method: "patch",
     url: `https://api.baserow.io/api/database/rows/table/47848/${id}/?user_field_names=true`,
@@ -426,4 +425,36 @@ exports.patchUser = async (fn, ln, pass, id) => {
       password: pass,
     },
   }).catch((err) => console.log(err.toJSON()));
+};
+
+exports.postPay = async (c, l, o, m, id) => {
+  const getdetails = await allUserData((data) => {
+    return data.filter((f) => {
+      return f.id === id;
+    });
+  });
+
+  const payrollcontent = await allPayroll((data) => {
+    return data.filter((f) => {
+      return f.id === getdetails[0].payroll[0].id;
+    });
+  });
+
+  const userobj = payrollcontent[0].salary;
+  let pasreddata = JSON.parse(userobj);
+
+  total = +c + +l + +o - +m;
+  // delete pasreddata.additional;
+  let gettotal = +pasreddata.additional;
+
+  pasreddata = { ...pasreddata, additional: gettotal + total };
+  console.log(pasreddata);
+
+  api({
+    method: "patch",
+    url: `https://api.baserow.io/api/database/rows/table/47849/${getdetails[0].payroll[0].id}/?user_field_names=true`,
+    data: {
+      salary: JSON.stringify(pasreddata),
+    },
+  });
 };

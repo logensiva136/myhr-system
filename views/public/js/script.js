@@ -3,7 +3,7 @@ $("#att").submit(function (e) {
   if ($("#theBtn").attr("value") === "in") {
     if (moment().format("H") > 8) {
       if (result === null) {
-        result = prompt("Justification for late clock in.")
+        result = prompt("Justification for late clock in.");
         $("#reason").val(result);
       } else {
         $("#reason").attr("value", "");
@@ -12,14 +12,14 @@ $("#att").submit(function (e) {
   } else {
     if (moment().format("H") < 18) {
       if (result === null) {
-        result = prompt("Justification for early clock out.")
+        result = prompt("Justification for early clock out.");
         $("#reason").val(result);
       } else {
         $("#reason").attr("value", "");
       }
     }
   }
-})
+});
 
 //clock//
 function getTime() {
