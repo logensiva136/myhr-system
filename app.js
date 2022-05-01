@@ -39,10 +39,11 @@ const userRouter = require("./routes/user");
 const req = require("express/lib/request");
 app.use("/", userRouter);
 
-
 app.use((req, res) => {
   res.render("404");
 });
+
+// start server
 const port = process.env.PORT || 12345;
 app.listen(port, (req, res, next) => {
   console.log("Listening : http://localhost:" + port);

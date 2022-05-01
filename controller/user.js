@@ -20,8 +20,8 @@ var storage = multer.diskStorage({
 });
 var upload = multer({ storage: storage }).single("attachment");
 const fs = require("fs");
-const { render } = require("express/lib/response");
-// const { rejects } = require("assert");
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const bcrypt = require("../bcrypt/bcrypt");
 
 exports.getHome = (req, res, next) => {
   if (req.session.username) {
@@ -73,16 +73,16 @@ exports.postAtt = (req, res, next) => {
   if (req.session.username) {
     req.body.status === "in"
       ? userDB
-        .postClockIn(req.session.username, req.session.rowId, req.body.reason)
-        .then((data) => {
-          res.redirect("/att");
-        })
-        .catch((err) => console.log(err))
+          .postClockIn(req.session.username, req.session.rowId, req.body.reason)
+          .then((data) => {
+            res.redirect("/att");
+          })
+          .catch((err) => console.log(err))
       : userDB
-        .postClockOut(req.session.username, req.body.reason)
-        .then((data) => {
-          res.redirect("/att");
-        });
+          .postClockOut(req.session.username, req.body.reason)
+          .then((data) => {
+            res.redirect("/att");
+          });
   } else {
     res.redirect("/");
   }
@@ -95,7 +95,8 @@ exports.postLogin = (req, res, next) => {
         error: "user",
         forgot: false,
       });
-    } else if (data[0].password !== req.body.password) {
+    } else if (false) {
+      // !bcrypt.compare(req.body.password, data[0].password)
       res.render("login", {
         error: "pass",
         forgot: false,
@@ -147,31 +148,6 @@ exports.postCP = (req, res, next) => {
   }
 };
 
-exports.getForgot = (req, res, next) => {
-  res.render("login", {
-    error: "",
-    forgot: true,
-  });
-};
-
-exports.postForgot = (req, res, next) => {
-  var mailOptions = {
-    from: "youremail@gmail.com",
-    to: "myfriend@yahoo.com",
-    subject: "Sending Email using Node.js",
-    text: "That was easy!",
-  };
-
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log("Email sent: " + info.response);
-      res.redirect("/login");
-    }
-  });
-};
-
 exports.getAddUser = (req, res, next) => {
   if (req.session.username) {
     res.render("register", {
@@ -186,41 +162,76 @@ exports.getAddUser = (req, res, next) => {
 };
 
 exports.postAddUser = (req, res, next) => {
-  var today = new Date();
-  var birthDate = new Date(req.body.dob);
-  var age = today.getFullYear() - birthDate.getFullYear();
-  let achecker = false;
+  if (req.session.username) {
+    var today = new Date();
+    var birthDate = new Date(req.body.dob);
+    var age = today.getFullYear() - birthDate.getFullYear();
+    let achecker = false;
 
-  if (age < 18) {
-    achecker = false;
-    res.render("register", {
-      role: req.session.role,
-      error: "age",
+    // verify age
+    if (age < 18) {
+      achecker = false;
+      res.render("register", {
+        role: req.session.role,
+        error: "age",
+        username: req.session.fn,
+      });
+    } else {
+      achecker = true;
+    }
+    // check username
+    userDB.getDetailsByUsername(req.body.username, async (uchecker) => {
+      //hash password
+      // let encryptedPass;
+      // let encryptedPass;
+      await delay(500);
+      // encryptedPass = bcrypt.hash("123");
+      await delay(500);
+
+      //checking existing username
+      if (!(uchecker.length > 0) && achecker) {
+        //adding new user
+        userDB
+          .postNewUser(
+            req.body.fname,
+            req.body.lname,
+            req.body.username,
+            req.body.dob,
+            req.body.gender,
+            req.body.position,
+            req.body.userRole,
+            123
+          )
+          .then(async (data) => {
+            await delay(500);
+            //get all user for compare
+            const allusers = await userDB.listUsers();
+            await delay(500);
+
+            // filter user
+            const filtereduser = await allusers[allusers.length - 1];
+
+            // ad payroll for new user
+            userDB.postNewPayroll(filtereduser.id, req.body.salary);
+
+            //redirect
+            res.render("register", {
+              role: req.session.role,
+              username: req.session.fn,
+              error: "",
+            });
+          });
+      } else {
+        res.render("register", {
+          role: req.session.role,
+          username: req.session.fn,
+          error: "username",
+        });
+      }
     });
   } else {
-    achecker = true;
+    res.redirect("/");
   }
-
-  userDB.getDetailsByUsername(req.body.username, (uchecker) => {
-    if (!(uchecker.length > 0) && achecker) {
-      userDB.postNewUser(
-        req.body.fname,
-        req.body.lname,
-        req.body.username,
-        req.body.dob,
-        req.body.gender,
-        req.body.position,
-        req.body.salary,
-        req.body.userRole
-      );
-      res.redirect("/");
-    }
-    res.render("register", {
-      role: req.session.role,
-      username: req.session.fn,
-      error: "username",
-    });
-  });
 };
 
 exports.getLogout = (req, res, next) => {
@@ -234,14 +245,33 @@ exports.getLogout = (req, res, next) => {
 exports.getEleave = async (req, res, next) => {
   if (req.session.username) {
     const allLeaves = await userDB.getLeaves();
-    // const allusers = await userDB.listUsers();
-    const userLeave = await userDB.getLeaveByUser(req.session.rowId);
-    console.log(allLeaves);
+    const userLeaves = allLeaves.filter((data) => {
+      return allLeaves[0].user_id[0].id === req.session.rowId;
+    });
+    const allUser = await userDB.listUsers();
+    const useridandusername = await allUser.map((data) => {
+      return { id: data.id, username: data.first_name + " " + data.last_name };
+    });
+
+    await delay(1000);
     res.render("eleave", {
       role: req.session.role,
       username: req.session.fn,
       allLeaves: allLeaves,
-      userLeave: userLeave,
+      userLeave: userLeaves,
+      med: userLeaves.filter(
+        (data) => data.tol === "medical" && data.status === "approved"
+      ),
+      ann: userLeaves.filter(
+        (data) => data.tol === "annual" && data.status === "approved"
+      ),
+      hos: userLeaves.filter(
+        (data) => data.tol === "hospital" && data.status === "approved"
+      ),
+      mar: userLeaves.filter(
+        (data) => data.tol === "maternity" && data.status === "approved"
+      ),
+      userdata: useridandusername,
     });
   } else {
     req.session.currentDir = req.originalUrl;
@@ -250,60 +280,94 @@ exports.getEleave = async (req, res, next) => {
 };
 
 exports.postEleave = (req, res, next) => {
-  // console.log(req.body.leaveType, req.body.startDate, req.body.endDate)
+  // console.log(req.body.leaveType, req.body.startDate, req.body.endDate);
 
-  userDB.postLeave();
+  const leaveDuration = moment(req.body.endDate).diff(
+    moment(req.body.startDate),
+    "days"
+  );
+
+  userDB.postLeaves(
+    req.body.leaveType,
+    req.body.startDate,
+    req.body.endDate,
+    req.session.rowId,
+    leaveDuration
+  );
   res.redirect("/eleave");
 };
 
-exports.getSP = (req, res, next) => {
+exports.patchApprovedLeave = async (req, res, next) => {
+  const theurl = req.params.url;
+  userDB.patchApprovedLeave(theurl);
+  await delay(500);
+  res.redirect("/eleave");
+};
+
+exports.patchRejectedLeave = async (req, res, next) => {
+  const theurl = req.params.url;
+  userDB.patchRejectedLeave(theurl);
+  await delay(5000);
+  res.redirect("/eleave");
+};
+
+exports.getSP = async (req, res, next) => {
   const today = new Date();
   const thisDate = today.getDate();
   const thisMonth = today.getMonth();
   const thisYear = today.getYear();
+  const spdata = await userDB.getSP(req.session.username);
 
   if (req.session.username) {
     res.render("smartPlanner", {
       role: req.session.role,
-
-      todayDate: thisDate,
       username: req.session.fn,
+      spdata: spdata.data.results,
     });
   } else {
     req.session.currentDir = req.originalUrl;
     res.redirect("/");
   }
+  console.log(spdata.data);
 };
 
-exports.postSP = () => {
+exports.postSP = (req, res, next) => {
+  userDB.postSP(
+    req.body.std,
+    req.body.end,
+    req.body.desc,
+    req.session.username,
+    req.session.rowId
+  );
+  res.redirect("/sp");
+};
 
-}
+exports.getDown = (req, res, next) => {
+  res.download("uploads/" + req.params.dwurl, req.params.dwurl);
+};
 
 exports.getClaim = async (req, res, next) => {
   if (req.session.username) {
     if (req.session.role === "user") {
-      const claimData = await userDB.getClaimByUser(req.session.username);
+      const userClaimData = await userDB.getClaimByUser(req.session.username);
       let totalRM = 0;
       i = 0;
       const approvedClaims =
-        claimData < 1
+        userClaimData < 1
           ? 0
-          : claimData.filter((data) => data.status === "approved");
+          : userClaimData.filter((data) => data.status === "approved");
       const pendingClaims =
-        claimData < 1
+        userClaimData < 1
           ? 0
-          : claimData.filter((data) => data.status === "pending");
+          : userClaimData.filter((data) => data.status === "pending");
       const rejectedClaims =
-        claimData < 1
+        userClaimData < 1
           ? 0
-          : claimData.filter((data) => data.status === "rejected");
+          : userClaimData.filter((data) => data.status === "rejected");
       while (i < approvedClaims.length) {
         totalRM = totalRM + +approvedClaims[i].amount;
         i++;
       }
-      // console.log(claimData)
-      // const getAmounts = claimData.map(data => data.amount)
-      // console.log(getAmounts)
       res.render("eclaim", {
         role: req.session.role,
         ecDt: new Date().toLocaleDateString(),
@@ -313,29 +377,28 @@ exports.getClaim = async (req, res, next) => {
         pn: approvedClaims !== 0 ? pendingClaims.length : 0,
         rj: rejectedClaims !== 0 ? rejectedClaims.length : 0,
         total: totalRM,
-        all: claimData,
+        all: userClaimData,
       });
     } else {
-      const claimData = await userDB.getClaim(req.session.username);
+      const userClaimData = await userDB.getClaim(req.session.username);
       let totalRM = 0;
       i = 0;
       const approvedClaims =
-        claimData < 1
+        userClaimData < 1
           ? 0
-          : claimData.filter((data) => data.status === "approved");
+          : userClaimData.filter((data) => data.status === "approved");
       const pendingClaims =
-        claimData < 1
+        userClaimData < 1
           ? 0
-          : claimData.filter((data) => data.status === "pending");
+          : userClaimData.filter((data) => data.status === "pending");
       const rejectedClaims =
-        claimData < 1
+        userClaimData < 1
           ? 0
-          : claimData.filter((data) => data.status === "rejected");
+          : userClaimData.filter((data) => data.status === "rejected");
       while (i < approvedClaims.length) {
         totalRM = totalRM + +approvedClaims[i].amount;
         i++;
       }
-      // console.log(claimData)
       res.render("eclaim", {
         role: req.session.role,
         ecDt: new Date().toLocaleDateString(),
@@ -345,7 +408,7 @@ exports.getClaim = async (req, res, next) => {
         pn: approvedClaims !== 0 ? pendingClaims.length : 0,
         rj: rejectedClaims !== 0 ? rejectedClaims.length : 0,
         total: totalRM,
-        all: claimData,
+        all: userClaimData,
         moment: moment,
       });
     }
@@ -355,38 +418,22 @@ exports.getClaim = async (req, res, next) => {
   }
 };
 
-exports.getDown = (req, res, next) => {
-  res.download("uploads/" + req.params.dwurl, req.params.dwurl);
-};
-
-exports.getApproveClaimParams = (req, res, next) => {
-  userDB.patchClaim(req.params.url);
-  res.redirect("/eclaim");
-};
-exports.getRejectClaimParams = (req, res, next) => {
-  userDB.patchClaim(req.params.url.split("/")[1]);
-  res.redirect("/eclaim");
-};
-
-exports.postClaim = (req, res, next) => {
+exports.postClaim = async (req, res, next) => {
   if (req.session.username) {
-    upload(req, res, function (err) {
+    upload(req, res, async function (err) {
       if (err) {
         console.log(err);
       }
-      console.log(req.file);
-      userDB
-        .postClaim(
-          req.session.rowId,
-          req.body.typeOfClaim,
-          req.body.amount,
-          req.body.justify,
-          req.file.path,
-          req.session.username
-        )
-        .then(() => {
-          res.redirect("/eclaim");
-        });
+      userDB.postClaim(
+        req.session.rowId,
+        req.body.typeOfClaim,
+        req.body.amount,
+        req.body.justify,
+        req.file.path,
+        req.session.username
+      );
+      await delay(1000);
+      res.redirect("/eclaim");
     });
   } else {
     req.session.currentDir = req.originalUrl;
@@ -394,14 +441,33 @@ exports.postClaim = (req, res, next) => {
   }
 };
 
+exports.patchApprovedClaim = (req, res, next) => {
+  userDB.patchApprovedClaim(req.params.url);
+  res.redirect("/eclaim");
+};
+
+exports.patchRejectedClaim = (req, res, next) => {
+  userDB.patchRejectedClaim(req.params.url);
+  res.redirect("/eclaim");
+};
+
 exports.getSetting = async (req, res, next) => {
   userDB.getDetailsByUsername(req.session.username, (userDetails) => {
     if (req.session.username) {
+      const details = {
+        fn: userDetails[0].first_name,
+        ln: userDetails[0].last_name,
+        pass: userDetails[0].password,
+        id: userDetails[0].idnum,
+        rowid: userDetails[0].id,
+      };
+
       res.render("setting", {
         role: req.session.role,
         ecDt: new Date().toLocaleDateString(),
         username: req.session.fn,
-        data: userDetails[0],
+        data: details,
+        err: "",
       });
     } else {
       req.session.currentDir = req.originalUrl;
@@ -410,20 +476,92 @@ exports.getSetting = async (req, res, next) => {
   });
 };
 
-exports.postSetting = (req, res, next) => {
-  res.send("setting", {
-    role: req.session.role,
-    ecDt: new Date().toLocaleDateString(),
-  });
+exports.postSetting = async (req, res, next) => {
+  if (req.session.username) {
+    const fn = req.body.fname;
+    const ln = req.body.lname;
+    const ps1 = req.body.ps1;
+    const ps2 = req.body.ps2;
+    const id = req.body.rowid;
+    console.log(id);
+    userDB.getDetailsByUsername(req.session.username, async (userDetails) => {
+      const details = {
+        fn: userDetails[0].first_name,
+        ln: userDetails[0].last_name,
+        pass: userDetails[0].password,
+        id: userDetails[0].idnum,
+        rowid: userDetails[0].id,
+      };
+
+      if (fn.trim().length === 0 || ln.trim().length === 0) {
+        res.render("setting", {
+          role: req.session.role,
+          ecDt: new Date().toLocaleDateString(),
+          username: req.session.fn,
+          data: details,
+          err: "Enter First Name and Last Name",
+        });
+      } else if (ps1.trim().length === 0 || ps2.trim().length === 0) {
+        res.render("setting", {
+          role: req.session.role,
+          ecDt: new Date().toLocaleDateString(),
+          username: req.session.fn,
+          data: details,
+          err: "Enter Password",
+        });
+      } else if (ps1.trim() !== ps2.trim()) {
+        res.render("setting", {
+          role: req.session.role,
+          ecDt: new Date().toLocaleDateString(),
+          username: req.session.fn,
+          data: details,
+          err: "Both passwords were mismatched",
+        });
+      } else {
+        userDB.patchUser(fn.trim(), ln.trim(), ps1.trim(), id);
+        await delay(500);
+        // res.redirect("/setting");
+
+        res.render("setting", {
+          role: req.session.role,
+          ecDt: new Date().toLocaleDateString(),
+          username: req.session.fn,
+          data: details,
+          err: "Profile Updated!",
+        });
+      }
+    });
+  } else {
+    res.redirect("/");
+  }
+};
+
+exports.au = (req, res) => {
+  res.render("401");
 };
 
 exports.getPay = async (req, res, next) => {
   if (req.session.username) {
     const allPayroll = await userDB.getPayroll();
+    const payrollByUser = await allPayroll.filter((data) => {
+      return data.user[0].id === req.session.rowId;
+    });
+    console.log(payrollByUser);
     const allClaim = await userDB.getClaim();
+    const calimByUser = await allClaim.filter((data) => {
+      return data.userId === req.session.rowId;
+    });
+    console.log(calimByUser);
     const allCICO = await userDB.getAllCICO();
+    const cicoByUser = await allCICO.filter((data) => {
+      return data.userId[0].id === req.session.rowId;
+    });
+    console.log(cicoByUser);
     const allUser = await userDB.listUsers();
-    // console.log(allUser)
+    const currentUserDetail = await allUser.filter((data) => {
+      return data.id === req.session.rowId;
+    });
+    console.log(currentUserDetail);
 
     //get salary only
     let mySalary = allPayroll.filter(
@@ -520,8 +658,4 @@ exports.getPay = async (req, res, next) => {
     req.session.currentDir = req.originalUrl;
     res.redirect("/");
   }
-};
-
-exports.au = (req, res) => {
-  res.render("401");
 };

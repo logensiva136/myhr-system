@@ -6,17 +6,49 @@
             <div id="topPusher" class="">
                 <% if(role==="user" ){ %>
 
+                    <br>
                     <table class="text-center noBorderTable">
                         <tr>
+                            <th>Leave Type</th>
                             <th>Leave Balance</th>
                             <th>Leave Approved</th>
                         </tr>
                         <tr>
-                            <td></td>
-                            <td></td>
+                            <td>Medical Leave</td>
+                            <td>
+                                <%= userLeave[userLeave.length - 1].leave_left %>
+                            </td>
+                            <td>
+                                <%= med.length %>
+                            </td>
                         </tr>
-
-
+                        <tr>
+                            <td>Annual Leave</td>
+                            <td>
+                                <%= userLeave[userLeave.length - 1].leave_left %>
+                            </td>
+                            <td>
+                                <%= ann.length %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Hospitalization Leave</td>
+                            <td>
+                                <%= userLeave[userLeave.length - 1].leave_left %>
+                            </td>
+                            <td>
+                                <%= hos.length %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Maternity Leave</td>
+                            <td>
+                                <%= userLeave[userLeave.length - 1].leave_left %>
+                            </td>
+                            <td>
+                                <%= mar.length %>
+                            </td>
+                        </tr>
                     </table>
                     <hr>
                     <form action="/eleave" method="post" class="form-custom">
@@ -49,14 +81,13 @@
                                 <td>Action</td>
                             </tr>
                             <% allLeaves.map(data=>{ %>
-
-
                                 <tr>
                                     <td>
                                         <%= data.leave_request_id %>
                                     </td>
                                     <td>
-                                        <%= username %>
+                                        <% const getusername=userdata.filter(a=>data.user_id[0].id === a.id) %>
+                                            <%= getusername[0].username %>
                                     </td>
                                     <td>
                                         <%= data.tol %>
@@ -73,14 +104,20 @@
                                     <td>
                                         <%= data.leave_left %>
                                     </td>
-                                    <td>
-                                        <form action="/eleave/approve/<%= data.claim_id %>" method="post">
-                                            <input type="submit" class="btn btn-success btn-sm" value="Approve">
-                                        </form>
-                                        <form action="/eleave/reject/<%= data.claim_id %>" method="post">
-                                            <input type="submit" class="btn btn-danger btn-sm" value="Reject">
-                                        </form>
-                                    </td>
+                                    <% if(data.status==="pending" ) {%>
+                                        <td>
+                                            <form action="/eleave/approve/<%= data.leave_request_id %>" method="post">
+                                                <input type="submit" class="btn btn-success btn-sm" value="Approve">
+                                            </form>
+                                            <form action="/eleave/reject/<%= data.leave_request_id %>" method="post">
+                                                <input type="submit" class="btn btn-danger btn-sm" value="Reject">
+                                            </form>
+                                        </td>
+                                        <% }else if(data.status==="rejected" ){ %>
+                                            <td>Rejected</td>
+                                            <% }else if(data.status==="approved" ){ %>
+                                                <td>Approved</td>
+                                                <% } %>
                                 </tr>
                                 <% }) %>
                         </table>

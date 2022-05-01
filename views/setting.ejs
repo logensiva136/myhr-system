@@ -2,21 +2,36 @@
     <%- include("includes/sidebar") %>
         <%- include("includes/img") %>
             <div id="topPusher">
-                <form action="/addUser" class="form-control form-custom">
+                <form action="/setting" method="post" class="form-control form-custom">
                     <h2 class="mb-5 text-center">Enter Employee Details</h2>
-                    <input type="text" name="idnum" id="idnum" value="Employee ID : <%= data.idnum %>" disabled="true"
+                    <h5 class="text-center">Settings</h5>
+                    <input type="text" name="idnum" id="idnum" value="Employee ID : <%= data.id %>" disabled="true"
                         placeholder="Employee ID">
+                    <input type="hidden" name="rowid" value="<%= data.rowid %>">
+                    <p class="text-center">Change Username</p>
                     <div>
-                        <input type="text" name="fname" id="employeeName" placeholder="First Name" required>
-                        <input type="text" name="lname" id="employeeName" placeholder="Last Name" required>
+                        <input type="text" value="<%= data.fn %>" name="fname" id="employeeName"
+                            placeholder="First Name" required>
+                        <input type="text" value="<%= data.ln %>" name="lname" id="employeeName" placeholder="Last Name"
+                            required>
                     </div>
                     <p class="text-center">Change Password</p>
                     <div>
-                        <input type="password" name="ps1" placeholder="New Password" required>
-                        <input type="password" name="ps2" placeholder="Retype Password" required>
+                        <input type="password" value="<%= data.pass %>" name="ps1" placeholder="New Password" required>
+                        <input type="password" value="<%= data.pass %>" name="ps2" placeholder="Retype Password"
+                            required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Create Profile</button>
-                    <button type="reset" class="btn btn-danger">Clear Information</button>
+                    <% if(err==="Profile Updated!" ) {%>
+                        <p class="text-center" style="color: green;">
+                            <%= err %>
+                        </p>
+                        <% }else{ %>
+                            <p class="text-center" style="color: red;">
+                                <%= err %>
+                            </p>
+                            <% } %>
+                                <button type="submit" class="btn btn-primary">Create Profile</button>
+                                <button type="reset" class="btn btn-danger">Clear Information</button>
                 </form>
             </div>
             <%- include('includes/foot') %>
