@@ -541,121 +541,234 @@ exports.au = (req, res) => {
 };
 
 exports.getPay = async (req, res, next) => {
+  // logged in?
   if (req.session.username) {
+    // all pyroll
     const allPayroll = await userDB.getPayroll();
+    //payroll by user
     const payrollByUser = await allPayroll.filter((data) => {
       return data.user[0].id === req.session.rowId;
     });
-    console.log(payrollByUser);
+    // console.log(payrollByUser);
+
     const allClaim = await userDB.getClaim();
-    const calimByUser = await allClaim.filter((data) => {
+    const claimByUser = await allClaim.filter((data) => {
       return data.userId === req.session.rowId;
     });
-    console.log(calimByUser);
+    // console.log(claimByUser);
+
     const allCICO = await userDB.getAllCICO();
     const cicoByUser = await allCICO.filter((data) => {
       return data.userId[0].id === req.session.rowId;
     });
-    console.log(cicoByUser);
+    // console.log(cicoByUser);
+
     const allUser = await userDB.listUsers();
     const currentUserDetail = await allUser.filter((data) => {
       return data.id === req.session.rowId;
     });
-    console.log(currentUserDetail);
+    // console.log(currentUserDetail);
 
-    //get salary only
-    let mySalary = allPayroll.filter(
-      (data) => data.user[0].id === req.session.rowId
-    );
-    mySalary = JSON.parse(mySalary[0].salary).salary;
-    // console.log(mySalary)
+    //user payroll data
+    // filter by years by users
+
+    // get year from clock in data by user
     const years = [
-      ...new Set(allCICO.map((e) => new Date(e.in).getFullYear())),
-    ];
-    function getMonthName(monthNum) {
-      switch (monthNum) {
-        case "0":
-          return "Jan";
-        case "1":
-          return "Feb";
-        case "2":
-          return "Mar";
-        case "3":
-          return "Apr";
-        case "4":
-          return "May";
-        case "5":
-          return "Jun";
-        case "6":
-          return "Jul";
-        case "7":
-          return "Aug";
-        case "8":
-          return "Sept";
-        case "9":
-          return "Oct";
-        case "10":
-          return "Nov";
-        case "11":
-          return "Dec";
-        default:
-          return "logen";
-      }
-    }
-    const months = [
       ...new Set(
-        allCICO.map((e) => {
-          return getMonthName(moment(e.in).format("M"));
+        cicoByUser.map((e) => {
+          return new Date(e.in).getFullYear();
         })
       ),
     ];
-    // overtime calc - moment(data.out).diff(data.in, 'hours') >= 10
-    const getOvertimesbyUser = allCICO.filter((data) => {
-      return moment(data.out).diff(data.in, "hours") >= 10;
-    });
+    // console.log(years);
 
-    //get total days in that month
-    function daysInMonth(val) {
-      return val.map((e) => {
-        var dt = new Date(e.in);
-        var month = dt.getMonth();
-        var year = dt.getFullYear();
-        const a = new Date(year, month, 0).getDate();
-        return a;
-      });
+    const userSalary = JSON.parse(payrollByUser[0].salary).salary;
+
+    const userSalaryCalc = "";
+    // console.log(cicoByUser);
+    const fulldays = await cicoByUser.filter((data) => {
+      return moment(data.out).diff(moment(data.in), "hours") === 10;
+    });
+    fulldays.map((data) => moment(data.in).format("D/M/YYYY"));
+
+    // console.log(moment().format("Q"));
+
+    const OT = await cicoByUser.filter((data) => {
+      return moment(data.out).diff(moment(data.in), "hours") > 10;
+    });
+    // console.log(OT);
+    OT.map((data) => moment(data.in).format("D/M/YYYY"));
+
+    // get days in that month (fullday & OT)
+    let dataByYears;
+    let dataByMonths = {
+      January: [],
+      February: [],
+      March: [],
+      April: [],
+      May: [],
+      June: [],
+      July: [],
+      August: [],
+      September: [],
+      October: [],
+      November: [],
+      December: [],
+    };
+    // let createyearkey = []
+    async function formatCICO(thecico) {
+      // first get set of data by years
+      for (let i = 0; i < years.length; i++) {
+        for (let ii = 0; ii < thecico.length; ii++) {
+          if (+moment(thecico[ii].in).format("YYYY") === years[i]) {
+            dataByYears = { [years[i]]: [] };
+            const mnth = moment(thecico[ii].in).format("MMMM");
+            switch (mnth) {
+              case "January":
+                dataByMonths[mnth].push(thecico[ii]);
+                break;
+              case "February":
+                dataByMonths[mnth].push(thecico[ii]);
+                break;
+              case "March":
+                dataByMonths[mnth].push(thecico[ii]);
+                break;
+              case "April":
+                dataByMonths[mnth].push(thecico[ii]);
+                break;
+              case "May":
+                dataByMonths[mnth].push(thecico[ii]);
+                break;
+              case "June":
+                dataByMonths[mnth].push(thecico[ii]);
+                break;
+              case "July":
+                dataByMonths[mnth].push(thecico[ii]);
+                break;
+              case "August":
+                dataByMonths[mnth].push(thecico[ii]);
+                break;
+              case "September":
+                dataByMonths[mnth].push(thecico[ii]);
+                break;
+              case "October":
+                dataByMonths[mnth].push(thecico[ii]);
+                break;
+              case "November":
+                dataByMonths[mnth].push(thecico[ii]);
+                break;
+              case "December":
+                dataByMonths[mnth].push(thecico[ii]);
+                break;
+              default:
+                break;
+            }
+            dataByYears[years[i]].push(dataByMonths);
+          }
+        }
+        i++;
+      }
     }
-    // console.log(getOvertimesbyUser)
-    const dim = daysInMonth(allCICO);
-    //returning an array
-    const salaryPerDay = dim.map((data) => {
-      return mySalary / data;
-    });
+    formatCICO(cicoByUser);
 
-    //checking additional pays
-    const allApprovedClaims = allClaim.filter((data) => {
-      data.status === "pending";
-    });
+    //    const daysInMonth = moment().daysInMonth();
 
-    const thisMonthClaims = allApprovedClaims.filter((data) => {
-      data === data;
-    });
-    console.log(thisMonthClaims);
+    const perdaypay = "";
+
+    // console.log(dataByYears);
 
     res.render("payroll", {
-      username: req.session.username,
+      username: req.session.fn,
       role: req.session.role,
-      pay: allPayroll,
-      claim: allClaim,
-      cico: allCICO,
-      salary: mySalary,
+      // pay: allPayroll,
+      // claim: allClaim,
+      usercico: dataByYears,
+      salary: userSalary,
       years: years,
-      months: months,
-      role: req.session.role,
-      totals: salaryPerDay,
+      // months: months,
+      // totals: salaryPerDay,
       totalUser: allUser,
+      moment: moment,
     });
   } else {
     req.session.currentDir = req.originalUrl;
     res.redirect("/");
   }
 };
+
+// //get salary only
+// let mySalary = allPayroll.filter(
+//   (data) => data.user[0].id === req.session.rowId
+// );
+// mySalary = JSON.parse(mySalary[0].salary).salary;
+// // console.log(mySalary)
+// const years = [
+//   ...new Set(allCICO.map((e) => new Date(e.in).getFullYear())),
+// ];
+// function getMonthName(monthNum) {
+//   switch (monthNum) {
+//     case "0":
+//       return "Jan";
+//     case "1":
+//       return "Feb";
+//     case "2":
+//       return "Mar";
+//     case "3":
+//       return "Apr";
+//     case "4":
+//       return "May";
+//     case "5":
+//       return "Jun";
+//     case "6":
+//       return "Jul";
+//     case "7":
+//       return "Aug";
+//     case "8":
+//       return "Sept";
+//     case "9":
+//       return "Oct";
+//     case "10":
+//       return "Nov";
+//     case "11":
+//       return "Dec";
+//     default:
+//       return "logen";
+//   }
+// }
+// const months = [
+//   ...new Set(
+//     allCICO.map((e) => {
+//       return getMonthName(moment(e.in).format("M"));
+//     })
+//   ),
+// ];
+// // overtime calc - moment(data.out).diff(data.in, 'hours') >= 10
+// const getOvertimesbyUser = allCICO.filter((data) => {
+//   return moment(data.out).diff(data.in, "hours") >= 10;
+// });
+
+// //get total days in that month
+// function daysInMonth(val) {
+//   return val.map((e) => {
+//     var dt = new Date(e.in);
+//     var month = dt.getMonth();
+//     var year = dt.getFullYear();
+//     const a = new Date(year, month, 0).getDate();
+//     return a;
+//   });
+// }
+
+// const dim = daysInMonth(allCICO);
+// //returning an array
+// const salaryPerDay = dim.map((data) => {
+//   return mySalary / data;
+// });
+
+// //checking additional pays
+// const allApprovedClaims = allClaim.filter((data) => {
+//   data.status === "pending";
+// });
+
+// const thisMonthClaims = allApprovedClaims.filter((data) => {
+//   return data === data;
+// });
