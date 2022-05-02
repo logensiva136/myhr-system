@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payslip</title>
+    <!-- <link rel="stylesheet" href="/css/bootstrap.css" />
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/style.css" /> -->
+    <script src="/js/moment-with-locales.js"></script>
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body id="element">
+    <table style="border: 0px;">
+        <tr>
+            <td>Employee ID &nbsp&nbsp&nbsp&nbsp</td>
+            <td>
+                <%= user.idnum %>
+            </td>
+        </tr>
+        <tr>
+            <td>Name</td>
+            <td>
+                <%= user.first_name %>
+                    <%= user.last_name %>
+            </td>
+        </tr>
+        <tr>
+            <td>Print Date</td>
+            <td>
+                <%= moment().format('DD/MM/YYYY') %>
+            </td>
+        </tr>
+        <tr>
+            <td>Month</td>
+            <td>
+                <%= moment().format('MM') %>
+            </td>
+        </tr>
+    </table>
+    <hr>
+    <table style="width: 100%;">
+        <tr>
+            <td>Basic Pay : <%= basic %>
+            </td>
+        </tr>
+        <tr>
+            <td>Claims + Leaves + Others : <%= add %>
+            </td>
+        </tr>
+        <tr>
+            <td>Over Time : <%= ot %>
+            </td>
+        </tr>
+
+        <tr>
+            <td style="border-bottom: 1px solid black;border-top: 1px solid black">
+                Total : <%= total %>
+            </td>
+        </tr>
+    </table>
+    </div>
+
+
+
+
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.8.0/html2pdf.bundle.min.js"></script>
+<script>
+    var element = document.getElementById('element');
+    html2pdf(element);
+</script>
+
+</html>

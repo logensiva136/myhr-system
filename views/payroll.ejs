@@ -18,7 +18,7 @@
                         <td>Base Salary</td>
                         <td>Additional</td>
                         <td>Total</td>
-                        <td>Attachment</td>
+                        <td>Payslip</td>
                     </tr>
                     <tr>
                         <td>
@@ -33,7 +33,11 @@
                         <td>
                             <%= +salary + +additional %>
                         </td>
-                        <td>Attachment</td>
+                        <td>
+                            <form action="/generate/<%= useridfordown %>" method="get">
+                                <button type="submit" class="btn btn-success">Download</button>
+                            </form>
+                        </td>
                     </tr>
 
                 </table>
@@ -60,7 +64,6 @@
                             Substractions <input type="number" name="minus" value="0" min="0" max="99999"
                                 placeholder="Substractions" required>
                             <button type="submit" class="btn btn-primary">Update Payment</button>
-
                         </form>
                         <br><br>
                         <% } %>

@@ -44,4 +44,6 @@ route.post("/payroll", userController.postPay);
 
 route.get("/download/:dwurl", userController.getDown);
 
+route.get("/generate/:id", userController.payslip);
+
 module.exports = route;

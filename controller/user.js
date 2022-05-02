@@ -21,7 +21,7 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage }).single("attachment");
 const fs = require("fs");
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const bcrypt = require("../bcrypt/bcrypt");
+const bcrypt = require("bcrypt");
 
 exports.getHome = (req, res, next) => {
   if (req.session.username) {
@@ -90,29 +90,30 @@ exports.postAtt = (req, res, next) => {
 
 exports.postLogin = (req, res, next) => {
   userDB.getDetailsByUsername(req.body.username, (data) => {
-    if (data < 1) {
-      res.render("login", {
-        error: "user",
-        forgot: false,
-      });
-    } else if (false) {
-      // !bcrypt.compare(req.body.password, data[0].password)
-      res.render("login", {
-        error: "pass",
-        forgot: false,
-      });
-    } else {
-      req.session.username = data[0].username;
-      req.session.email = data[0].email;
-      req.session.role = data[0].user_role;
-      req.session.fn = data[0].first_name;
-      req.session.ln = data[0].last_name;
-      req.session.ftl = data[0].ftl;
-      req.session.rowId = data[0].id;
-      req.session.idnum = data[0].idnum;
-      req.session.redirect = "";
-      res.redirect("/");
-    }
+    bcrypt.compare(req.body.password, data[0].password).then(function (result) {
+      if (data < 1) {
+        res.render("login", {
+          error: "user",
+          forgot: false,
+        });
+      } else if (!result) {
+        res.render("login", {
+          error: "pass",
+          forgot: false,
+        });
+      } else {
+        req.session.username = data[0].username;
+        req.session.email = data[0].email;
+        req.session.role = data[0].user_role;
+        req.session.fn = data[0].first_name;
+        req.session.ln = data[0].last_name;
+        req.session.ftl = data[0].ftl;
+        req.session.rowId = data[0].id;
+        req.session.idnum = data[0].idnum;
+        req.session.redirect = "";
+        res.redirect("/");
+      }
+    });
   });
 };
 
@@ -141,9 +142,12 @@ exports.postCP = (req, res, next) => {
   } else if (req.body.ps1 !== req.body.ps2) {
     res.render("changePass", { err: "Password is not match" });
   } else if (req.body.ps1 === req.body.ps2) {
-    userDB.patchUserPassword(req.session.rowId, req.body.ps1, (data) => {
-      req.session.ftl = false;
-      res.redirect("/");
+    bcrypt.hash(req.body.ps1, 8).then(function (hash) {
+      // Store hash in your password DB.
+      userDB.patchUserPassword(req.session.rowId, hash, (data) => {
+        req.session.ftl = false;
+        res.redirect("/");
+      });
     });
   }
 };
@@ -182,45 +186,46 @@ exports.postAddUser = (req, res, next) => {
     // check username
     userDB.getDetailsByUsername(req.body.username, async (uchecker) => {
       //hash password
-      // let encryptedPass;
-      // let encryptedPass;
       await delay(500);
       // encryptedPass = bcrypt.hash("123");
       await delay(500);
 
       //checking existing username
       if (!(uchecker.length > 0) && achecker) {
-        //adding new user
-        userDB
-          .postNewUser(
-            req.body.fname,
-            req.body.lname,
-            req.body.username,
-            req.body.dob,
-            req.body.gender,
-            req.body.position,
-            req.body.userRole,
-            123
-          )
-          .then(async (data) => {
-            await delay(500);
-            //get all user for compare
-            const allusers = await userDB.listUsers();
-            await delay(500);
+        bcrypt.hash("123", 8).then(function (hash) {
+          // Store hash in your password DB.
+          // Adding new user
+          userDB
+            .postNewUser(
+              req.body.fname,
+              req.body.lname,
+              req.body.username,
+              req.body.dob,
+              req.body.gender,
+              req.body.position,
+              req.body.userRole,
+              hash
+            )
+            .then(async (data) => {
+              await delay(500);
+              //get all user for compare
+              const allusers = await userDB.listUsers();
+              await delay(500);
 
-            // filter user
-            const filtereduser = await allusers[allusers.length - 1];
+              // filter user
+              const filtereduser = await allusers[allusers.length - 1];
 
-            // ad payroll for new user
-            userDB.postNewPayroll(filtereduser.id, req.body.salary);
+              // ad payroll for new user
+              userDB.postNewPayroll(filtereduser.id, req.body.salary);
 
-            //redirect
-            res.render("register", {
-              role: req.session.role,
-              username: req.session.fn,
-              error: "",
+              //redirect
+              res.render("register", {
+                role: req.session.role,
+                username: req.session.fn,
+                error: "",
+              });
             });
-          });
+        });
       } else {
         res.render("register", {
           role: req.session.role,
@@ -626,6 +631,7 @@ exports.getPay = async (req, res, next) => {
     res.render("payroll", {
       username: req.session.fn,
       role: req.session.role,
+      useridfordown: req.session.rowId,
       usercico: cicoByUser,
       salary: userSalary.salary,
       additional: userSalary.additional,
@@ -649,6 +655,48 @@ exports.postPay = async (req, res, next) => {
     userDB.postPay(cl, le, ot, minus, userid);
     await delay(500).then((data) => {
       res.redirect("/payroll");
+    });
+  } else {
+    res.redirect("/");
+  }
+};
+
+exports.payslip = async (req, res, next) => {
+  if (req.session.username) {
+    // const id = req.params.id;
+    const allUser = await userDB.listUsers();
+    const currentUserDetail = await allUser.filter((data) => {
+      return data.id === req.session.rowId;
+    });
+    const allCICO = await userDB.getAllCICO();
+    const cicoByUser = await allCICO.filter((data) => {
+      return data.userId[0].id === req.session.rowId;
+    });
+    const OT = await cicoByUser.filter((data) => {
+      return moment(data.out).diff(moment(data.in), "hours") > 9;
+    }).length;
+    // console.log(OT);
+    const allPayroll = await userDB.getPayroll();
+    //payroll by user
+    const payrollByUser = await allPayroll.filter((data) => {
+      return data.user[0].id === req.session.rowId;
+    });
+
+    const onedaysalary =
+      +JSON.parse(payrollByUser[0].salary).salary / moment().daysInMonth();
+
+    const otpay = OT * onedaysalary.toFixed(2);
+    const basesalary = JSON.parse(payrollByUser[0].salary).salary;
+    const additional = JSON.parse(payrollByUser[0].salary).additional;
+    const salarytotal = +otpay + +basesalary + +additional;
+
+    res.render("payslip", {
+      basic: basesalary,
+      add: additional,
+      ot: otpay,
+      total: salarytotal,
+      moment: moment,
+      user: currentUserDetail[0],
     });
   } else {
     res.redirect("/");
