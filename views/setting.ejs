@@ -8,7 +8,7 @@
                     <input type="text" name="idnum" id="idnum" value="Employee ID : <%= data.id %>" disabled="true"
                         placeholder="Employee ID">
                     <input type="hidden" name="rowid" value="<%= data.rowid %>">
-                    <p class="text-center">Change Username</p>
+                    <p class="text-center">Change Name</p>
                     <div>
                         <input type="text" value="<%= data.fn %>" name="fname" id="employeeName"
                             placeholder="First Name" required>
@@ -17,21 +17,14 @@
                     </div>
                     <p class="text-center">Change Password</p>
                     <div>
-                        <input type="password" value="<%= data.pass %>" name="ps1" placeholder="New Password" required>
-                        <input type="password" value="<%= data.pass %>" name="ps2" placeholder="Retype Password"
-                            required>
+                        <input type="password" value="" name="ps1" placeholder="New Password">
+                        <input type="password" value="" name="ps2" placeholder="Retype Password">
                     </div>
-                    <% if(err==="Profile Updated!" ) {%>
-                        <p class="text-center" style="color: green;">
-                            <%= err %>
-                        </p>
-                        <% }else{ %>
-                            <p class="text-center" style="color: red;">
-                                <%= err %>
-                            </p>
-                            <% } %>
-                                <button type="submit" class="btn btn-primary">Create Profile</button>
-                                <button type="reset" class="btn btn-danger">Clear Information</button>
+                    <p class="text-center" style="color:<%= color %>;">
+                        <%= err %>
+                    </p>
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                    <button type="reset" class="btn btn-danger">Clear Information</button>
                 </form>
             </div>
             <%- include('includes/foot') %>

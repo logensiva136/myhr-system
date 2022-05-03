@@ -329,14 +329,20 @@ exports.getLeaves = async () => {
 exports.postLeaves = async (tol, sd, ed, userid, leaveDuration) => {
   const allLeaves = await leaves();
   const userLeave = await allLeaves.filter((data) => {
-    return data.user_id.id === userid;
+    return data.user_id[0].id === userid;
   });
 
   let theCount;
-  if (userLeave.length === 0) {
+  if (userLeave.length < 1) {
     theCount = 60;
   } else {
     theCount = userLeave[userLeave.length - 1].leave_left;
+  }
+  let theAnotherCount;
+  if (userLeave.length < 1) {
+    theAnotherCount = 0;
+  } else {
+    theAnotherCount = userLeave[userLeave.length - 1].leave_left;
   }
 
   const idn = Math.floor(1000 + Math.random() * 9000);
@@ -350,11 +356,8 @@ exports.postLeaves = async (tol, sd, ed, userid, leaveDuration) => {
       end_date: ed,
       user_id: [userid],
       status: "pending",
-      leave_left: theCount - leaveDuration,
-      leave_taken:
-        userLeave.length !== 0
-          ? 60 - userLeave[userLeave.length - 1].leave_left
-          : leaveDuration,
+      leave_left: theCount,
+      leave_taken: theAnotherCount,
     },
   });
 };
@@ -394,18 +397,41 @@ exports.patchRejectedLeave = async (claim_id) => {
 
 exports.postSP = (sd, ed, desc, uname, uid) => {
   const idn = Math.floor(1000 + Math.random() * 9000);
-  api({
-    method: "post",
-    url: "https://api.baserow.io/api/database/rows/table/61247/?user_field_names=true",
-    data: {
-      idnum: idn,
-      startDate: sd,
-      endDate: ed,
-      description: desc,
-      username: uname,
-      userId: [uid],
-    },
-  }).catch((err) => console.log(err.toJSON()));
+  return (
+    api({
+      method: "post",
+      url: "https://api.baserow.io/api/database/rows/table/61247/?user_field_names=true",
+      data: {
+        idnum: idn,
+        startDate: sd,
+        endDate: ed,
+        description: desc,
+        username: uname,
+        userId: [uid],
+      },
+    })
+      // .then((data) => {
+      //   return api({
+      //     method: "get",
+      //     url: "https://api.baserow.io/api/database/rows/table/61247/?user_field_names=true",
+      //   })
+      //     .then((data) => {
+      //       const userdatabyusername = data.filter((data) => {
+      //         return data.username === uname;
+      //       });
+
+      //       return api({
+      //         method: "patch",
+      //         url: `https://api.baserow.io/api/database/rows/table/47848/${uid}/?user_field_names=true`,
+      //         data: {
+      //           smartplanner: [userdatabyusername[userdatabyusername - 1]],
+      //         },
+      //       });
+      //     })
+      //     .catch((err) => console.log(err.toJSON()));
+      // })
+      .catch((err) => console.log(err.toJSON()))
+  );
 };
 
 exports.getSP = (uname) => {
@@ -415,16 +441,27 @@ exports.getSP = (uname) => {
   }).catch((err) => console.log(err.toJSON()));
 };
 
-exports.patchUser = async (fn, ln, pass, id) => {
-  api({
-    method: "patch",
-    url: `https://api.baserow.io/api/database/rows/table/47848/${id}/?user_field_names=true`,
-    data: {
-      first_name: fn,
-      last_name: ln,
-      password: pass,
-    },
-  }).catch((err) => console.log(err.toJSON()));
+exports.patchUser = async (fn, ln, pass, id, val) => {
+  if (val === "pass") {
+    api({
+      method: "patch",
+      url: `https://api.baserow.io/api/database/rows/table/47848/${id}/?user_field_names=true`,
+      data: {
+        first_name: fn,
+        last_name: ln,
+        password: pass,
+      },
+    }).catch((err) => console.log(err.toJSON()));
+  } else {
+    api({
+      method: "patch",
+      url: `https://api.baserow.io/api/database/rows/table/47848/${id}/?user_field_names=true`,
+      data: {
+        first_name: fn,
+        last_name: ln,
+      },
+    }).catch((err) => console.log(err.toJSON()));
+  }
 };
 
 exports.postPay = async (c, l, o, m, id) => {

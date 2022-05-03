@@ -8,6 +8,7 @@ const { v4: uuidv4 } = require("uuid");
 var moment = require("moment");
 var nodeCal = require("node-calendar");
 const multer = require("multer");
+const nodemailer = require("nodemailer");
 var storage = multer.diskStorage({
   destination: function (req, file, callback) {
     callback(null, "uploads/");
@@ -90,30 +91,34 @@ exports.postAtt = (req, res, next) => {
 
 exports.postLogin = (req, res, next) => {
   userDB.getDetailsByUsername(req.body.username, (data) => {
-    bcrypt.compare(req.body.password, data[0].password).then(function (result) {
-      if (data < 1) {
-        res.render("login", {
-          error: "user",
-          forgot: false,
+    if (data < 1) {
+      res.render("login", {
+        error: "user",
+        forgot: false,
+      });
+    } else {
+      bcrypt
+        .compare(req.body.password, data[0].password)
+        .then(function (result) {
+          if (!result) {
+            res.render("login", {
+              error: "pass",
+              forgot: false,
+            });
+          } else {
+            req.session.username = data[0].username;
+            req.session.email = data[0].email;
+            req.session.role = data[0].user_role;
+            req.session.fn = data[0].first_name;
+            req.session.ln = data[0].last_name;
+            req.session.ftl = data[0].ftl;
+            req.session.rowId = data[0].id;
+            req.session.idnum = data[0].idnum;
+            req.session.redirect = "";
+            res.redirect("/");
+          }
         });
-      } else if (!result) {
-        res.render("login", {
-          error: "pass",
-          forgot: false,
-        });
-      } else {
-        req.session.username = data[0].username;
-        req.session.email = data[0].email;
-        req.session.role = data[0].user_role;
-        req.session.fn = data[0].first_name;
-        req.session.ln = data[0].last_name;
-        req.session.ftl = data[0].ftl;
-        req.session.rowId = data[0].id;
-        req.session.idnum = data[0].idnum;
-        req.session.redirect = "";
-        res.redirect("/");
-      }
-    });
+    }
   });
 };
 
@@ -251,31 +256,79 @@ exports.getEleave = async (req, res, next) => {
   if (req.session.username) {
     const allLeaves = await userDB.getLeaves();
     const userLeaves = allLeaves.filter((data) => {
-      return allLeaves[0].user_id[0].id === req.session.rowId;
+      return data.user_id[0].id === req.session.rowId;
     });
+
     const allUser = await userDB.listUsers();
     const useridandusername = await allUser.map((data) => {
       return { id: data.id, username: data.first_name + " " + data.last_name };
     });
+
+    const countMedLeaves = userLeaves.filter(
+      (data) => data.tol === "medical" && data.status === "approved"
+    );
+
+    const totalMed = countMedLeaves.reduce((init, currentVal) => {
+      return (
+        init +
+        moment(currentVal.end_date).diff(moment(currentVal.start_date), "days")
+      );
+    }, 0);
+
+    // console.log(totalMed);
+
+    const countAnnLeaves = userLeaves.filter(
+      (data) => data.tol === "annual" && data.status === "approved"
+    );
+
+    const totalAnn = countAnnLeaves.reduce((init, currentVal) => {
+      return (
+        init +
+        moment(currentVal.end_date).diff(moment(currentVal.start_date), "days")
+      );
+    }, 0);
+
+    // console.log(totalAnn);
+
+    const countHosLeaves = userLeaves.filter(
+      (data) => data.tol === "hospital" && data.status === "approved"
+    );
+
+    const totalHos = countHosLeaves.reduce((init, currentVal) => {
+      return (
+        init +
+        moment(currentVal.end_date).diff(moment(currentVal.start_date), "days")
+      );
+    }, 0);
+
+    // console.log(totalHos);
+
+    const countMarLeaves = userLeaves.filter(
+      (data) => data.tol === "maternity" && data.status === "approved"
+    );
+
+    const totalMar = countMarLeaves.reduce((init, currentVal) => {
+      return (
+        init +
+        moment(currentVal.end_date).diff(moment(currentVal.start_date), "days")
+      );
+    }, 0);
+
+    // console.log(totalMar);
 
     await delay(1000);
     res.render("eleave", {
       role: req.session.role,
       username: req.session.fn,
       allLeaves: allLeaves,
-      userLeave: userLeaves,
-      med: userLeaves.filter(
-        (data) => data.tol === "medical" && data.status === "approved"
-      ),
-      ann: userLeaves.filter(
-        (data) => data.tol === "annual" && data.status === "approved"
-      ),
-      hos: userLeaves.filter(
-        (data) => data.tol === "hospital" && data.status === "approved"
-      ),
-      mar: userLeaves.filter(
-        (data) => data.tol === "maternity" && data.status === "approved"
-      ),
+      userLeave:
+        userLeaves.length > 0
+          ? userLeaves[userLeaves.length - 1].leave_left
+          : 60,
+      med: totalMed,
+      ann: totalAnn,
+      hos: totalHos,
+      mar: totalMar,
       userdata: useridandusername,
     });
   } else {
@@ -318,9 +371,7 @@ exports.patchRejectedLeave = async (req, res, next) => {
 
 exports.getSP = async (req, res, next) => {
   const today = new Date();
-  const thisDate = today.getDate();
-  const thisMonth = today.getMonth();
-  const thisYear = today.getYear();
+
   const spdata = await userDB.getSP(req.session.username);
 
   if (req.session.username) {
@@ -333,17 +384,53 @@ exports.getSP = async (req, res, next) => {
     req.session.currentDir = req.originalUrl;
     res.redirect("/");
   }
-  console.log(spdata.data);
+  console.log(spdata.data.results);
 };
 
-exports.postSP = (req, res, next) => {
-  userDB.postSP(
-    req.body.std,
-    req.body.end,
-    req.body.desc,
-    req.session.username,
-    req.session.rowId
-  );
+exports.postSP = async (req, res, next) => {
+  const fn = req.session.fn;
+  const ln = req.session.ln;
+  const std = req.body.std;
+  const end = req.body.end;
+  const desc = req.body.desc;
+  const uname = req.session.username;
+  const userid = req.session.rowId;
+  const email = req.session.email;
+
+  let mailTransporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "bwayne1771@gmail.com",
+      pass: "kishan123",
+    },
+  });
+
+  var mailDetails = {
+    from: "bwayne1771@gmail.com",
+    to: email,
+    subject: "Event Created | " + fn + " " + ln + " | My HR System",
+    // text: "Plaintext version of the message",
+    html:
+      "<h4>Your Event Created</h4><br><p>This is a reminder mail from My HR System</p><br><p>Description : " +
+      desc +
+      "</p><p>Start Date : " +
+      std +
+      "</p><p>End Date : " +
+      end +
+      "</p>",
+  };
+
+  mailTransporter.sendMail(mailDetails, function (err, data) {
+    if (err) {
+      console.log(err);
+      console.log("Error Occurs");
+    } else {
+      console.log(data);
+      console.log("Email sent successfully");
+    }
+  });
+
+  await userDB.postSP(std, end, desc, uname, userid);
   res.redirect("/sp");
 };
 
@@ -462,7 +549,7 @@ exports.getSetting = async (req, res, next) => {
       const details = {
         fn: userDetails[0].first_name,
         ln: userDetails[0].last_name,
-        pass: userDetails[0].password,
+        // pass: userDetails[0].password,
         id: userDetails[0].idnum,
         rowid: userDetails[0].id,
       };
@@ -505,28 +592,33 @@ exports.postSetting = async (req, res, next) => {
           username: req.session.fn,
           data: details,
           err: "Enter First Name and Last Name",
+          color: "red",
         });
-      } else if (ps1.trim().length === 0 || ps2.trim().length === 0) {
-        res.render("setting", {
-          role: req.session.role,
-          ecDt: new Date().toLocaleDateString(),
-          username: req.session.fn,
-          data: details,
-          err: "Enter Password",
-        });
-      } else if (ps1.trim() !== ps2.trim()) {
-        res.render("setting", {
-          role: req.session.role,
-          ecDt: new Date().toLocaleDateString(),
-          username: req.session.fn,
-          data: details,
-          err: "Both passwords were mismatched",
-        });
+      } else if (ps1.trim().length !== 0 || ps2.trim().length !== 0) {
+        if (ps1.trim() !== ps2.trim()) {
+          res.render("setting", {
+            role: req.session.role,
+            ecDt: new Date().toLocaleDateString(),
+            username: req.session.fn,
+            data: details,
+            err: "Both passwords were mismatched",
+            color: "red",
+          });
+        } else {
+          userDB.patchUser(fn.trim(), ln.trim(), ps1.trim(), id, "pass");
+          await delay(500);
+          res.render("setting", {
+            role: req.session.role,
+            ecDt: new Date().toLocaleDateString(),
+            username: req.session.fn,
+            data: details,
+            err: "Profile Updated",
+            color: "green",
+          });
+        }
       } else {
-        userDB.patchUser(fn.trim(), ln.trim(), ps1.trim(), id);
+        userDB.patchUser(fn.trim(), ln.trim(), ps1.trim(), id, "");
         await delay(500);
-        // res.redirect("/setting");
-
         res.render("setting", {
           role: req.session.role,
           ecDt: new Date().toLocaleDateString(),
