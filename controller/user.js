@@ -560,6 +560,7 @@ exports.getSetting = async (req, res, next) => {
         username: req.session.fn,
         data: details,
         err: "",
+        color: "",
       });
     } else {
       req.session.currentDir = req.originalUrl;
@@ -580,7 +581,7 @@ exports.postSetting = async (req, res, next) => {
       const details = {
         fn: userDetails[0].first_name,
         ln: userDetails[0].last_name,
-        pass: userDetails[0].password,
+        // pass: userDetails[0].password,
         id: userDetails[0].idnum,
         rowid: userDetails[0].id,
       };
@@ -625,6 +626,7 @@ exports.postSetting = async (req, res, next) => {
           username: req.session.fn,
           data: details,
           err: "Profile Updated!",
+          color: "green",
         });
       }
     });

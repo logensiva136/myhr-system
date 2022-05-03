@@ -364,14 +364,31 @@ exports.postLeaves = async (tol, sd, ed, userid, leaveDuration) => {
 
 exports.patchApprovedLeave = async (claim_id) => {
   const allLeaves = await leaves();
-  const thisClaim = allLeaves.filter((data) => {
+  const thisClaim = await allLeaves.filter((data) => {
     return data.leave_request_id === claim_id;
   });
+
+  const calcDays = moment(thisClaim[0].end_date).diff(
+    moment(thisClaim[0].start_date),
+    "days"
+  );
+
+  const getTaken = +thisClaim[0].leave_taken;
+  const getBal = +thisClaim[0].leave_left;
+
+  // console.log(calcDays);
+  // console.log(getTaken);
+  // console.log(getBal);
+  // console.log(getTaken + calcDays);
+  // console.log(getBal - calcDays);
+
   api({
     method: "patch",
     url: `https://api.baserow.io/api/database/rows/table/57611/${thisClaim[0].id}/?user_field_names=true`,
     data: {
       status: "approved",
+      leave_taken: getTaken + calcDays,
+      leave_left: getBal - calcDays,
     },
   }).catch((err) => {
     console.log(err.toJSON());
@@ -443,15 +460,17 @@ exports.getSP = (uname) => {
 
 exports.patchUser = async (fn, ln, pass, id, val) => {
   if (val === "pass") {
-    api({
-      method: "patch",
-      url: `https://api.baserow.io/api/database/rows/table/47848/${id}/?user_field_names=true`,
-      data: {
-        first_name: fn,
-        last_name: ln,
-        password: pass,
-      },
-    }).catch((err) => console.log(err.toJSON()));
+    bcrypt.hash(pass, 8).then(function (hash) {
+      api({
+        method: "patch",
+        url: `https://api.baserow.io/api/database/rows/table/47848/${id}/?user_field_names=true`,
+        data: {
+          first_name: fn,
+          last_name: ln,
+          password: pass,
+        },
+      }).catch((err) => console.log(err.toJSON()));
+    });
   } else {
     api({
       method: "patch",
