@@ -10,9 +10,6 @@ route.get("/", userController.getHome);
 route.get("/login", userController.getLogin);
 route.post("/login", userController.postLogin);
 
-// route.get("/forgot", userController.getForgot);
-// route.post("/forgot", userController.postForgot);
-
 route.get("/logout", userController.getLogout);
 
 route.get("/addUser", userController.getAddUser);

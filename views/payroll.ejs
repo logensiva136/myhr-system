@@ -8,64 +8,81 @@
             <h4 class="text-center">My Payroll</h4>
 
             <!-- years loops -->
-            <% years.map(theYear=>{ %>
-                <h4 class="text-center">
-                    <%= theYear %>
-                </h4>
-                <table class="text-center noBorderTable">
-                    <tr>
-                        <td>Month</td>
-                        <td>Base Salary</td>
-                        <td>Additional</td>
-                        <td>Total</td>
-                        <td>Payslip</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <%= moment().format('MMMM') %>
-                        </td>
-                        <td>
-                            <%= salary %>
-                        </td>
-                        <td>
-                            <%= additional %>
-                        </td>
-                        <td>
-                            <%= +salary + +additional %>
-                        </td>
-                        <td>
-                            <form action="/generate/<%= useridfordown %>" method="get">
-                                <button type="submit" class="btn btn-success">Download</button>
-                            </form>
-                        </td>
-                    </tr>
+            <% if(years.length> 0) {%>
 
-                </table>
-                <% }) %>
+                <% years.map(theYear=>{ %>
+                    <h4 class="text-center">
+                        <%= theYear %>
+                    </h4>
+                    <table class="text-center noBorderTable">
+                        <tr>
+                            <td>Month</td>
+                            <td>Base Salary</td>
+                            <td>Additional</td>
+                            <td>Total</td>
+                            <td>Payslip</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <%= moment().format('MMMM') %>
+                            </td>
+                            <td>
+                                <%= salary %>
+                            </td>
+                            <td>
+                                <%= additional %>
+                            </td>
+                            <td>
+                                <%= +salary + +additional %>
+                            </td>
+                            <td>
+                                <form action="/generate/<%= useridfordown %>" method="get">
+                                    <button type="submit" class="btn btn-success">Download</button>
+                                </form>
+                            </td>
+                        </tr>
 
-                    <br>
-                    <% if(role==="admin" ){%>
-                        <h4 class="text-center">Additional Pay</h4>
-                        <form method="post" action="/payroll" class="form-control form-custom text-center">
-                            <select name="user">
-                                <% totalUser.map((data)=>{ %>
-                                    <option value="<%= data.id %>">
-                                        <%= data.first_name + " " + data.last_name %>
-                                    </option>
-                                    <% }) %>
-                            </select>
-                            <br>
-                            Claims <input type="number" name="claims" value="0" min="0" max="99999" placeholder="Claims"
-                                required>
-                            Leaves <input type="number" name="leaves" value="0" min="0" max="99999" placeholder="Leaves"
-                                required>
-                            Others <input type="number" name="others" value="0" min="0" max="99999" placeholder="Others"
-                                required>
-                            Substractions <input type="number" name="minus" value="0" min="0" max="99999"
-                                placeholder="Substractions" required>
-                            <button type="submit" class="btn btn-primary">Update Payment</button>
-                        </form>
-                        <br><br>
-                        <% } %>
+                    </table>
+                    <% }) %>
+                        <% }else{ %>
+                            <table class="text-center noBorderTable">
+                                <tr>
+                                    <td>Month</td>
+                                    <td>Base Salary</td>
+                                    <td>Additional</td>
+                                    <td>Total</td>
+                                    <td>Payslip</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5">No Data
+                                    </td>
+                                </tr>
 
-                            <%- include("includes/foot") %>
+                            </table>
+                            <% } %>
+                                <br>
+                                <% if(role==="admin" ){%>
+                                    <h4 class="text-center">Additional Pay</h4>
+                                    <form method="post" action="/payroll" class="form-control form-custom text-center">
+                                        <select name="user">
+                                            <% totalUser.map((data)=>{ %>
+                                                <option value="<%= data.id %>">
+                                                    <%= data.first_name + " " + data.last_name %>
+                                                </option>
+                                                <% }) %>
+                                        </select>
+                                        <br>
+                                        Claims <input type="number" name="claims" value="0" min="0" max="99999"
+                                            placeholder="Claims" required>
+                                        Leaves <input type="number" name="leaves" value="0" min="0" max="99999"
+                                            placeholder="Leaves" required>
+                                        Others <input type="number" name="others" value="0" min="0" max="99999"
+                                            placeholder="Others" required>
+                                        Substractions <input type="number" name="minus" value="0" min="0" max="99999"
+                                            placeholder="Substractions" required>
+                                        <button type="submit" class="btn btn-primary">Update Payment</button>
+                                    </form>
+                                    <br><br>
+                                    <% } %>
+
+                                        <%- include("includes/foot") %>

@@ -1,10 +1,11 @@
 const axios = require("axios");
-const res = require("express/lib/response");
 const moment = require("moment");
 const bcrypt = require("bcrypt");
-const saltRounds = 10;
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+// const saltRounds = 10;
+// // delay method
+// const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// inittialize axios defaults (to prevent code redundancy)
 const api = axios.create({
   baseURL: "https://api.baserow.io/api/",
   headers: {
@@ -14,6 +15,7 @@ const api = axios.create({
 });
 
 const allUserData = (cb) => {
+  // get all user data (for internal use)
   return api({
     method: "GET",
     url: "database/rows/table/47848/?user_field_names=true",
@@ -23,6 +25,7 @@ const allUserData = (cb) => {
 };
 
 const allPayroll = (cb) => {
+  // get all payroll data
   return api({
     method: "GET",
     url: "database/rows/table/47849/?user_field_names=true",
@@ -32,12 +35,14 @@ const allPayroll = (cb) => {
 };
 
 exports.listUsers = () => {
+  // get all user data (for external use)
   return allUserData((data) => {
     return data;
   });
 };
 
 exports.getDetailsByUsername = (username, cb) => {
+  // get all user data then filter by given username
   allUserData((data) => {
     cb(data.filter((data) => data.username === username));
   }).catch((err) => console.log(err));
@@ -53,7 +58,7 @@ exports.postNewUser = async (
   userRole,
   pass
 ) => {
-  // setting random id number
+  // create and declare random id number
   const useridn = Math.floor(1000 + Math.random() * 9000);
 
   // default mail
@@ -67,8 +72,7 @@ exports.postNewUser = async (
     return --age;
   }
 
-  // salting password
-
+  // creating new user
   api({
     method: "post",
     url: "database/rows/table/47848/?user_field_names=true",
@@ -84,6 +88,7 @@ exports.postNewUser = async (
       first_name: fname,
       last_name: lname,
       dob: dob,
+      // making first time login user to force to change password on first login
       ftl: true,
     },
   }).catch((err) => {
@@ -92,6 +97,7 @@ exports.postNewUser = async (
 };
 
 exports.patchUserPassword = (row_id, newPs, cb) => {
+  // changing new password after first login
   return api({
     method: "PATCH",
     url: `database/rows/table/47848/${row_id}/?user_field_names=true`,
@@ -105,6 +111,7 @@ exports.patchUserPassword = (row_id, newPs, cb) => {
 };
 
 exports.getClockInOutByUser = (username, cb) => {
+  // get all cico data by username (filtered)
   return api({
     method: "GET",
     url: "database/rows/table/47850/?user_field_names=true",
@@ -116,6 +123,7 @@ exports.getClockInOutByUser = (username, cb) => {
 };
 
 exports.getAllCICO = () => {
+  // get all cico data
   return api({
     method: "GET",
     url: "database/rows/table/47850/?user_field_names=true",
@@ -127,7 +135,9 @@ exports.getAllCICO = () => {
 };
 
 exports.postClockIn = (username, id, reason_in) => {
+  // create clock in data
   if (reason_in) {
+    // if have reason fill up reason field with value
     return api({
       method: "POST",
       url: "database/rows/table/47850/?user_field_names=true",
@@ -141,6 +151,7 @@ exports.postClockIn = (username, id, reason_in) => {
       },
     });
   } else {
+    // if not leave it blank in reason
     return api({
       method: "POST",
       url: "database/rows/table/47850/?user_field_names=true",
@@ -157,16 +168,18 @@ exports.postClockIn = (username, id, reason_in) => {
 };
 
 exports.postClockOut = (username, reason_out) => {
-  const now = new Date();
+  // ge all cico data
   return api({
     method: "GET",
     url: "database/rows/table/47850/?user_field_names=true",
   })
     .then((data) => {
+      // filter by username then parse data to next function
       const filteredData = data.data.results.filter(
         (val) => val.username === username
       );
       if (reason_out) {
+        // if user given reason update filtered data (retrieved data) in clock out and reson field
         return api({
           method: "patch",
           url: `database/rows/table/47850/${
@@ -178,6 +191,7 @@ exports.postClockOut = (username, reason_out) => {
           },
         });
       } else {
+        // if not just update clock out without reason in filtered data (retrieved data)
         return api({
           method: "patch",
           url: `database/rows/table/47850/${
@@ -194,8 +208,12 @@ exports.postClockOut = (username, reason_out) => {
 };
 
 exports.postClaim = (userid, typeofclaim, amounts, justify, thefile, uname) => {
+  // create random idnumber
   const idn = Math.floor(1000 + Math.random() * 9000);
+  // get date function
   const now = new Date();
+
+  // create claim data with given value
   api({
     method: "POST",
     url: "database/rows/table/47872/?user_field_names=true",
@@ -214,6 +232,7 @@ exports.postClaim = (userid, typeofclaim, amounts, justify, thefile, uname) => {
 };
 
 exports.getClaim = () => {
+  // get all claim data
   return api({
     method: "GET",
     url: `https://api.baserow.io/api/database/rows/table/47872/?user_field_names=true`,
@@ -224,12 +243,10 @@ exports.getClaim = () => {
     .catch((err) => {
       console.log(err);
     });
-  // // console.log(allClaims)
-  // const filterClaims = allClaims.filter(data => data.username === uname)
-  // // console.log(filterClaims[0])
 };
 
 exports.getClaimByUser = (uname) => {
+  // get claim data by username
   return api({
     method: "GET",
     url: `https://api.baserow.io/api/database/rows/table/47872/?user_field_names=true`,
@@ -248,6 +265,7 @@ exports.getClaimByUser = (uname) => {
 };
 
 const claims = () => {
+  // get all claims (for internal use)
   return api({
     method: "GET",
     url: `https://api.baserow.io/api/database/rows/table/47872/?user_field_names=true`,
@@ -261,11 +279,14 @@ const claims = () => {
 };
 
 exports.patchApprovedClaim = async (claimId) => {
+  // get all claims
   const allClaims = await claims();
+  //filter claims by claimid
   const filteredClaims = allClaims.filter((data) => {
     return data.claim_id === claimId;
   });
 
+  // update status to approved
   return api({
     method: "patch",
     url: `https://api.baserow.io/api/database/rows/table/47872/${filteredClaims[0].id}/?user_field_names=true`,
@@ -276,11 +297,14 @@ exports.patchApprovedClaim = async (claimId) => {
 };
 
 exports.patchRejectedClaim = async (claimId) => {
+  // get claim data
   const allClaims = await claims();
+  // filter claim data by claim id
   const filteredClaims = allClaims.filter((data) => {
     return data.claim_id === claimId;
   });
 
+  // update claim status to rejected
   return api({
     method: "patch",
     url: `https://api.baserow.io/api/database/rows/table/47872/${filteredClaims[0].id}/?user_field_names=true`,
@@ -291,6 +315,7 @@ exports.patchRejectedClaim = async (claimId) => {
 };
 
 exports.getPayroll = () => {
+  // get all payroll data
   return api({
     method: "GET",
     url: "database/rows/table/47849/?user_field_names=true",
@@ -302,50 +327,68 @@ exports.getPayroll = () => {
 };
 
 exports.postNewPayroll = (row_id, salary) => {
+  // create random idnumber for payroll id
   const payidn = Math.floor(1000 + Math.random() * 9000);
+
+  // cerate payroll data for user (it's triggered on registration)
   api({
     method: "post",
     url: "database/rows/table/47849/?user_field_names=true",
     data: {
       idnum: payidn,
-      salary: JSON.stringify({ salary: salary }),
+      // create object that contains base salary and 0 additional amount
+      salary: JSON.stringify({ salary: salary, additional: 0 }),
       user: [row_id],
     },
   });
 };
 
 const leaves = () => {
+  // get all leave data frm db (for internal use)
   return api({
     url: "https://api.baserow.io/api/database/rows/table/57611/?user_field_names=true",
   }).then((data) => data.data.results);
 };
 
 exports.getLeaves = async () => {
+  // get leaves data from db (for external use)
   return api({
     url: "https://api.baserow.io/api/database/rows/table/57611/?user_field_names=true",
   }).then((data) => data.data.results);
 };
 
 exports.postLeaves = async (tol, sd, ed, userid, leaveDuration) => {
+  // get all leave datas
   const allLeaves = await leaves();
+  //filter by user id
   const userLeave = await allLeaves.filter((data) => {
     return data.user_id[0].id === userid;
   });
 
+  // loops for count leave_balance
   let theCount;
   if (userLeave.length < 1) {
+    // if don't have leave record show 60 days leave balance
     theCount = 60;
   } else {
+    // if have show leave_left of last leave record
     theCount = userLeave[userLeave.length - 1].leave_left;
   }
+
+  // loops for count leave_taken
   let theAnotherCount;
   if (userLeave.length < 1) {
+    // if don't have leave record show 0 days leave taken
     theAnotherCount = 0;
   } else {
+    // if have show leave_taken of last leave record
     theAnotherCount = userLeave[userLeave.length - 1].leave_left;
   }
 
+  // create random idnumber for leave id
   const idn = Math.floor(1000 + Math.random() * 9000);
+
+  // create leave record with status = pending
   api({
     method: "post",
     url: "https://api.baserow.io/api/database/rows/table/57611/?user_field_names=true",
@@ -363,25 +406,25 @@ exports.postLeaves = async (tol, sd, ed, userid, leaveDuration) => {
 };
 
 exports.patchApprovedLeave = async (claim_id) => {
+  // get all leave datas frm db
   const allLeaves = await leaves();
+  // filter leaves by leave id
   const thisClaim = await allLeaves.filter((data) => {
     return data.leave_request_id === claim_id;
   });
 
+  // calc leaves duration from filtered leave
   const calcDays = moment(thisClaim[0].end_date).diff(
     moment(thisClaim[0].start_date),
     "days"
   );
 
+  // get taken count
   const getTaken = +thisClaim[0].leave_taken;
+  // get balance count
   const getBal = +thisClaim[0].leave_left;
 
-  // console.log(calcDays);
-  // console.log(getTaken);
-  // console.log(getBal);
-  // console.log(getTaken + calcDays);
-  // console.log(getBal - calcDays);
-
+  // update leave status to approved and counts (taken and balance)
   api({
     method: "patch",
     url: `https://api.baserow.io/api/database/rows/table/57611/${thisClaim[0].id}/?user_field_names=true`,
@@ -396,10 +439,14 @@ exports.patchApprovedLeave = async (claim_id) => {
 };
 
 exports.patchRejectedLeave = async (claim_id) => {
+  // get all leave data
   const allLeaves = await leaves();
+  // filter leave by leave id
   const thisClaim = allLeaves.filter((data) => {
     return data.leave_request_id === claim_id;
   });
+
+  // update leave status to rejected adn don't make any changes in counts
   api({
     method: "patch",
     url: `https://api.baserow.io/api/database/rows/table/57611/${thisClaim[0].id}/?user_field_names=true`,
@@ -413,45 +460,26 @@ exports.patchRejectedLeave = async (claim_id) => {
 };
 
 exports.postSP = (sd, ed, desc, uname, uid) => {
+  // create idnumber for smart planner
   const idn = Math.floor(1000 + Math.random() * 9000);
-  return (
-    api({
-      method: "post",
-      url: "https://api.baserow.io/api/database/rows/table/61247/?user_field_names=true",
-      data: {
-        idnum: idn,
-        startDate: sd,
-        endDate: ed,
-        description: desc,
-        username: uname,
-        userId: [uid],
-      },
-    })
-      // .then((data) => {
-      //   return api({
-      //     method: "get",
-      //     url: "https://api.baserow.io/api/database/rows/table/61247/?user_field_names=true",
-      //   })
-      //     .then((data) => {
-      //       const userdatabyusername = data.filter((data) => {
-      //         return data.username === uname;
-      //       });
 
-      //       return api({
-      //         method: "patch",
-      //         url: `https://api.baserow.io/api/database/rows/table/47848/${uid}/?user_field_names=true`,
-      //         data: {
-      //           smartplanner: [userdatabyusername[userdatabyusername - 1]],
-      //         },
-      //       });
-      //     })
-      //     .catch((err) => console.log(err.toJSON()));
-      // })
-      .catch((err) => console.log(err.toJSON()))
-  );
+  // create smart planner data
+  return api({
+    method: "post",
+    url: "https://api.baserow.io/api/database/rows/table/61247/?user_field_names=true",
+    data: {
+      idnum: idn,
+      startDate: sd,
+      endDate: ed,
+      description: desc,
+      username: uname,
+      userId: [uid],
+    },
+  }).catch((err) => console.log(err.toJSON()));
 };
 
 exports.getSP = (uname) => {
+  // get all smart planner data frm db
   return api({
     method: "get",
     url: "https://api.baserow.io/api/database/rows/table/61247/?user_field_names=true",
@@ -459,8 +487,13 @@ exports.getSP = (uname) => {
 };
 
 exports.patchUser = async (fn, ln, pass, id, val) => {
+  // update user datas
+  // check whether this is for password change or not
+  //if yes
   if (val === "pass") {
+    // encrypt (hashing) new password
     bcrypt.hash(pass, 8).then(function (hash) {
+      // user data with password
       api({
         method: "patch",
         url: `https://api.baserow.io/api/database/rows/table/47848/${id}/?user_field_names=true`,
@@ -472,6 +505,7 @@ exports.patchUser = async (fn, ln, pass, id, val) => {
       }).catch((err) => console.log(err.toJSON()));
     });
   } else {
+    // if no update user data without password (means password remains as it is)
     api({
       method: "patch",
       url: `https://api.baserow.io/api/database/rows/table/47848/${id}/?user_field_names=true`,
@@ -484,32 +518,40 @@ exports.patchUser = async (fn, ln, pass, id, val) => {
 };
 
 exports.postPay = async (c, l, o, m, id) => {
+  // get all user data and filter by user id
   const getdetails = await allUserData((data) => {
     return data.filter((f) => {
       return f.id === id;
     });
   });
 
+  // get all payroll data and filter by user id
   const payrollcontent = await allPayroll((data) => {
     return data.filter((f) => {
       return f.id === getdetails[0].payroll[0].id;
     });
   });
 
+  // get user salary from filtered payroll var (data)
   const userobj = payrollcontent[0].salary;
+  // parse to json format because it return json string, convert to js readable object
   let pasreddata = JSON.parse(userobj);
 
+  // totaling entered claims, leaves, others and deduction by admin
   total = +c + +l + +o - +m;
-  // delete pasreddata.additional;
+
+  // get existing additional value
   let gettotal = +pasreddata.additional;
 
+  // parsed and update into JSON Object
   pasreddata = { ...pasreddata, additional: gettotal + total };
-  console.log(pasreddata);
 
+  // update the user's salary field (additional amount field is in salary field as JSON Object)
   api({
     method: "patch",
     url: `https://api.baserow.io/api/database/rows/table/47849/${getdetails[0].payroll[0].id}/?user_field_names=true`,
     data: {
+      // convert json to string because the row's data type is string
       salary: JSON.stringify(pasreddata),
     },
   });
