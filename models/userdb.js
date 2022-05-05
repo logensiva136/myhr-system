@@ -1,9 +1,6 @@
 const axios = require("axios");
 const moment = require("moment");
 const bcrypt = require("bcrypt");
-// const saltRounds = 10;
-// // delay method
-// const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // inittialize axios defaults (to prevent code redundancy)
 const api = axios.create({
@@ -492,7 +489,7 @@ exports.patchUser = async (fn, ln, pass, id, val) => {
   //if yes
   if (val === "pass") {
     // encrypt (hashing) new password
-    bcrypt.hash(pass, 8).then(function (err, hash) {
+    bcrypt.hash(pass, 8, (err, hash) => {
       // user data with password
       api({
         method: "patch",

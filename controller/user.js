@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 var moment = require("moment");
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
+const path = require("path");
 //delay method
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const multer = require("multer");
@@ -665,7 +666,7 @@ exports.postSetting = async (req, res, next) => {
     const ln = req.body.lname;
     const ps1 = req.body.ps1;
     const ps2 = req.body.ps2;
-    const id = req.body.rowid;
+    const id = req.session.rowId;
     // get user data by username given by user
     userDB.getDetailsByUsername(req.session.username, async (userDetails) => {
       // save data in a JSON object to renader on page (firstname,lastname,user id, employee id)
@@ -676,18 +677,7 @@ exports.postSetting = async (req, res, next) => {
         rowid: userDetails[0].id,
       };
 
-      // chacks first name and last name were blank or not
-      if (fn.trim().length === 0 || ln.trim().length === 0) {
-        // render page with error
-        res.render("setting", {
-          role: req.session.role,
-          ecDt: new Date().toLocaleDateString(),
-          username: req.session.fn,
-          data: details,
-          err: "Enter First Name and Last Name",
-          color: "red",
-        });
-      } else if (ps1.trim().length !== 0 || ps2.trim().length !== 0) {
+      if (ps1.trim().length > 0 || ps2.trim().length > 0) {
         // if password is not blank means user want to update password
         if (ps1.trim() !== ps2.trim()) {
           // checks both pass field same or not
@@ -714,6 +704,18 @@ exports.postSetting = async (req, res, next) => {
             color: "green",
           });
         }
+      } else if (fn.trim().length === 0 || ln.trim().length === 0) {
+        // chacks first name and last name were blank or not
+        // render page with error
+        await delay(1000);
+        res.render("setting", {
+          role: req.session.role,
+          ecDt: new Date().toLocaleDateString(),
+          username: req.session.fn,
+          data: details,
+          err: "Enter First Name and Last Name",
+          color: "red",
+        });
       } else {
         // if  validation is true (with blank password field) then update all user info without password
         // render page with success message
