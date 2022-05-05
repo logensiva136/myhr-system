@@ -492,7 +492,7 @@ exports.patchUser = async (fn, ln, pass, id, val) => {
   //if yes
   if (val === "pass") {
     // encrypt (hashing) new password
-    bcrypt.hash(pass, 8).then(function (hash) {
+    bcrypt.hash(pass, 8).then(function (err, hash) {
       // user data with password
       api({
         method: "patch",
@@ -500,7 +500,7 @@ exports.patchUser = async (fn, ln, pass, id, val) => {
         data: {
           first_name: fn,
           last_name: ln,
-          password: pass,
+          password: hash,
         },
       }).catch((err) => console.log(err.toJSON()));
     });
